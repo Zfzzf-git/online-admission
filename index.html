@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Admission | Fajandar High School &amp; Junior College, Vahoor</title>
+  <meta name="description" content="Apply online for Standard 11th &amp; 12th admission at Fajandar High School &amp; Junior College Arts, Commerce, and Science, Vahoor." />
+  <meta name="keywords" content="Fajandar Junior College, Vahoor, Online Admission, 11th, 12th, Arts, Commerce, Science" />
+  <meta property="og:title" content="Online Admission — Fajandar Jr. College, Vahoor" />
+  <meta property="og:description" content="Secure your seat in Standard 11th or 12th at Fajandar High School &amp; Junior College." />
+  <meta name="theme-color" content="#3b82f6" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Firebase SDK v9 Compat (CDN) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+  <!-- jsPDF for PDF Download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ╔════════════════════════════════════════╗
+     ║        ANIMATED BACKGROUND             ║
+     ╚════════════════════════════════════════╝ -->
+<div class="bg-canvas" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- ╔════════════════════════════════════════╗
+     ║        LOADING OVERLAY                 ║
+     ╚════════════════════════════════════════╝ -->
+<div class="loading-overlay" id="loading-overlay" role="status" aria-live="polite">
+  <div class="loading-spinner-big"></div>
+  <p class="loading-text">Please wait…</p>
+</div>
+
+<!-- ╔════════════════════════════════════════╗
+     ║        TOAST CONTAINER                 ║
+     ╚════════════════════════════════════════╝ -->
+<div class="toast-container" id="toast-container" aria-live="assertive"></div>
+
+<!-- ╔════════════════════════════════════════╗
+     ║        MAIN APP SHELL                  ║
+     ╚════════════════════════════════════════╝ -->
+<div id="app">
+
+  <!-- ══════════════════════════════════════
+       TOP NAVBAR  (hidden on login page)
+  ══════════════════════════════════════ -->
+  <nav class="navbar" id="main-navbar" style="display:none;" aria-label="Main navigation">
+    <div class="navbar-brand">
+      <img class="navbar-logo" src="assets/logo.jpg" alt="Fajandar College Logo" onerror="this.style.display='none'" />
+      <div class="navbar-title">
+        Fajandar H.S. &amp; Jr. College
+        <span>Vahoor — Online Admission Portal</span>
+      </div>
+    </div>
+    <div class="navbar-user">
+      <img class="user-avatar" id="nav-user-avatar" src="" alt="User Avatar" style="display:none;" />
+      <span class="user-name" id="nav-user-name"></span>
+      <button class="btn-logout" id="btn-logout" title="Logout">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Logout
+      </button>
+    </div>
+  </nav>
+
+
+  <!-- ══════════════════════════════════════
+       PAGE 1 — LOGIN
+  ══════════════════════════════════════ -->
+  <section class="page active" id="page-login" aria-label="Login page">
+    <div class="login-card" role="main">
+
+      <!-- College Identity -->
+      <div class="college-logo-wrap">
+        <img class="college-logo" src="assets/logo.jpg" alt="Fajandar High School &amp; Junior College logo" onerror="this.style.display='none'" />
+        <div>
+          <div class="college-name">Fajandar High School &amp; Junior College</div>
+          <div class="college-sub">Arts · Commerce · Science &nbsp;|&nbsp; Vahoor</div>
+        </div>
+      </div>
+
+      <!-- Heading -->
+      <h1 class="login-title">Online Admission Portal</h1>
+      <p class="login-subtitle">
+        Apply for Standard <strong>11th</strong> or <strong>12th</strong> admission — 2025–26
+      </p>
+
+      <!-- Demo Mode Notice -->
+      <div id="demo-mode-notice" class="demo-notice">
+        <span style="font-size:1.3rem">⚙️</span>
+        <span><strong>Demo Mode Active:</strong> Firebase config not set. You can still explore the full app — forms, steps, dashboard &amp; PDF download work. To go live, fill in <code>firebase-config.js</code> with your Firebase &amp; MSG91 credentials.</span>
+      </div>
+
+      <!-- Google Sign-In Button -->
+      <button class="btn-google" id="btn-google-signin" aria-label="Sign in with Google">
+        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.29-8.16 2.29-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        Continue with Google
+      </button>
+
+<div style="margin-top:15px;">
+  <button class="btn btn-outline" id="btn-open-admin-login">
+    🔐 Admin Login
+  </button>
+</div>
+
+
+      <div class="login-divider">Secure &amp; Official</div>
+
+      <!-- Info notice -->
+      <div class="login-notice">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" width="18" height="18">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>After successful admission, an <strong>SMS confirmation</strong> with your Admission ID will be sent to your registered mobile number. Keep your 10th marksheet, passport photo, and Aadhaar card ready.</span>
+      </div>
+
+      <!-- Feature Badges -->
+      <div class="login-features">
+        <span class="feature-badge">🔒 Google Secure Login</span>
+        <span class="feature-badge">📱 SMS Confirmation</span>
+        <span class="feature-badge">📄 PDF Download</span>
+        <span class="feature-badge">🎓 Instant Admission ID</span>
+      </div>
+
+    </div><!-- /.login-card -->
+  </section><!-- /#page-login -->
+
+
+  <!-- ══════════════════════════════════════
+       PAGE 2 — ADMISSION FORM
+  ══════════════════════════════════════ -->
+  <section class="page" id="page-form" aria-label="Admission form">
+    <div class="form-page-body">
+
+      <!-- ── Stepper ── -->
+      <nav class="stepper" aria-label="Form progress">
+        <div class="stepper-line" aria-hidden="true"></div>
+        <div class="stepper-progress" id="stepper-progress" aria-hidden="true"></div>
+
+        <div class="step-item active" id="step-item-1">
+          <div class="step-circle">1</div>
+          <span class="step-label">Personal</span>
+        </div>
+        <div class="step-item" id="step-item-2">
+          <div class="step-circle">2</div>
+          <span class="step-label">Academic</span>
+        </div>
+        <div class="step-item" id="step-item-3">
+          <div class="step-circle">3</div>
+          <span class="step-label">Documents</span>
+        </div>
+        <div class="step-item" id="step-item-4">
+          <div class="step-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+          </div>
+          <span class="step-label">Review</span>
+        </div>
+      </nav>
+
+      <!-- ── Form Card ── -->
+      <div class="form-card" role="main">
+
+
+        <!-- ═══ STEP 1: Personal Information ═══ -->
+        <div class="form-step active" id="form-step-1">
+          <div class="step-header">
+            <div class="step-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Step 1 of 4 · Personal Information
+            </div>
+            <h2 class="step-title">Personal Details</h2>
+            <p class="step-desc">Fill in your personal details as per your 10th certificate. Fields marked <span style="color:var(--danger)">*</span> are required.</p>
+          </div>
+
+          <div class="form-grid">
+
+            <!-- Full Name -->
+            <div class="field full">
+              <label for="f-name">Full Name (as per 10th certificate) <span class="req">*</span></label>
+              <input type="text" id="f-name" name="fullName" placeholder="e.g. Mohammed Aryan Khan" required autocomplete="name" />
+              <span class="error-msg">⚠ Full name is required</span>
+            </div>
+
+            <!-- Father's Name -->
+            <div class="field">
+              <label for="f-father">Father's Name <span class="req">*</span></label>
+              <input type="text" id="f-father" name="fatherName" placeholder="e.g. Ahmed Raza Khan" required />
+              <span class="error-msg">⚠ Father's name is required</span>
+            </div>
+
+            <!-- Mother's Name -->
+            <div class="field">
+              <label for="f-mother">Mother's Name <span class="req">*</span></label>
+              <input type="text" id="f-mother" name="motherName" placeholder="e.g. Fatima Begum Khan" required />
+              <span class="error-msg">⚠ Mother's name is required</span>
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="field">
+              <label for="f-dob">Date of Birth <span class="req">*</span></label>
+              <input type="date" id="f-dob" name="dob" required max="2013-12-31" />
+              <span class="error-msg">⚠ Date of birth is required</span>
+            </div>
+
+            <!-- Gender -->
+            <div class="field">
+              <label>Gender <span class="req">*</span></label>
+              <div class="radio-group">
+                <div class="radio-option">
+                  <input type="radio" id="g-male" name="gender" value="Male" required />
+                  <label for="g-male">♂ Male</label>
+                </div>
+                <div class="radio-option">
+                  <input type="radio" id="g-female" name="gender" value="Female" />
+                  <label for="g-female">♀ Female</label>
+                </div>
+                <div class="radio-option">
+                  <input type="radio" id="g-other" name="gender" value="Other" />
+                  <label for="g-other">⚧ Other</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mobile -->
+            <div class="field">
+              <label for="f-mobile">Mobile Number <span class="req">*</span></label>
+              <input type="tel" id="f-mobile" name="mobile" placeholder="10-digit mobile number" required maxlength="10" pattern="[6-9]\d{9}" autocomplete="tel" />
+              <span class="error-msg">⚠ Enter a valid 10-digit Indian mobile number</span>
+            </div>
+
+            <!-- Email -->
+            <div class="field">
+              <label for="f-email">Email Address <span class="req">*</span></label>
+              <input type="email" id="f-email" name="email" placeholder="your@email.com" required autocomplete="email" />
+              <span class="error-msg">⚠ Enter a valid email address</span>
+            </div>
+
+            <!-- Aadhaar Number -->
+            <div class="field">
+              <label for="f-aadhaar">Aadhaar Number <span class="req">*</span></label>
+              <input type="text" id="f-aadhaar" name="aadhaar" placeholder="12-digit Aadhaar number" required maxlength="14" />
+              <span class="error-msg">⚠ Enter a valid 12-digit Aadhaar number</span>
+            </div>
+
+            <!-- Blood Group -->
+            <div class="field">
+              <label for="f-blood">Blood Group</label>
+              <select id="f-blood" name="bloodGroup">
+                <option value="">— Select Blood Group —</option>
+                <option value="A+">A+</option>
+                <option value="A-">A−</option>
+                <option value="B+">B+</option>
+                <option value="B-">B−</option>
+                <option value="O+">O+</option>
+                <option value="O-">O−</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB−</option>
+              </select>
+            </div>
+
+            <!-- Nationality -->
+            <div class="field">
+              <label for="f-nationality">Nationality</label>
+              <input type="text" id="f-nationality" name="nationality" value="Indian" placeholder="Indian" />
+            </div>
+
+            <!-- Religion -->
+            <div class="field">
+              <label for="f-religion">Religion</label>
+              <select id="f-religion" name="religion">
+                <option value="">— Select Religion —</option>
+                <option value="Hindu">Hindu</option>
+                <option value="Muslim">Muslim</option>
+                <option value="Christian">Christian</option>
+                <option value="Buddhist">Buddhist</option>
+                <option value="Jain">Jain</option>
+                <option value="Sikh">Sikh</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <!-- Category -->
+            <div class="field">
+              <label for="f-category">Category <span class="req">*</span></label>
+              <select id="f-category" name="category" required>
+                <option value="">— Select Category —</option>
+                <option value="General">General (Open)</option>
+                <option value="OBC">OBC</option>
+                <option value="SC">SC</option>
+                <option value="ST">ST</option>
+                <option value="VJNT">VJNT</option>
+                <option value="SBC">SBC</option>
+                <option value="EWS">EWS</option>
+              </select>
+              <span class="error-msg">⚠ Please select a category</span>
+            </div>
+
+            <!-- Address -->
+            <div class="field full">
+              <label for="f-address">Residential Address <span class="req">*</span></label>
+              <textarea id="f-address" name="address" rows="2" placeholder="House no., Street, Village" required></textarea>
+              <span class="error-msg">⚠ Address is required</span>
+            </div>
+
+            <!-- City -->
+            <div class="field">
+              <label for="f-city">City / Village <span class="req">*</span></label>
+              <input type="text" id="f-city" name="city" placeholder="e.g. Aurangabad" required />
+              <span class="error-msg">⚠ City is required</span>
+            </div>
+
+            <!-- State -->
+            <div class="field">
+              <label for="f-state">State <span class="req">*</span></label>
+              <select id="f-state" name="state" required>
+                <option value="">— Select State —</option>
+                <option value="Maharashtra" selected>Maharashtra</option>
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                <option value="Other">Other</option>
+              </select>
+              <span class="error-msg">⚠ State is required</span>
+            </div>
+
+            <!-- PIN Code -->
+            <div class="field">
+              <label for="f-pin">PIN Code <span class="req">*</span></label>
+              <input type="text" id="f-pin" name="pinCode" placeholder="e.g. 431101" required maxlength="6" pattern="[1-9][0-9]{5}" />
+              <span class="error-msg">⚠ Enter a valid 6-digit PIN code</span>
+            </div>
+
+          </div><!-- /.form-grid -->
+
+          <div class="form-nav">
+            <div></div>
+            <button class="btn btn-primary btn-next" id="btn-next-1" aria-label="Go to next step">
+              Next — Academic Details
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div><!-- /form-step-1 -->
+
+
+        <!-- ═══ STEP 2: Academic Details ═══ -->
+        <div class="form-step" id="form-step-2">
+          <div class="step-header">
+            <div class="step-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              Step 2 of 4 · Academic Details
+            </div>
+            <h2 class="step-title">Academic Details</h2>
+            <p class="step-desc">Select your standard, stream, and provide previous school information.</p>
+          </div>
+
+          <!-- Standard Selection -->
+          <div class="field" style="margin-bottom:22px;">
+            <label>Standard / Class Applying For <span class="req">*</span></label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="std-11" name="standard" value="11th" required />
+                <label for="std-11">⭐ 11th Standard</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="std-12" name="standard" value="12th" />
+                <label for="std-12">🏆 12th Standard</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stream Selection -->
+          <div class="field" style="margin-bottom:26px;">
+            <label>Stream <span class="req">*</span></label>
+            <div class="stream-cards">
+              <div class="stream-card">
+                <input type="radio" id="stream-arts" name="stream" value="Arts" />
+                <label for="stream-arts">
+                  <span class="stream-icon">🎨</span>
+                  <span>Arts</span>
+                  <small style="font-size:0.70rem; color:var(--text-muted); font-weight:400; margin-top:4px;">History, Civics, Geography, Marathi, English, Hindi</small>
+                </label>
+              </div>
+              <div class="stream-card">
+                <input type="radio" id="stream-commerce" name="stream" value="Commerce" />
+                <label for="stream-commerce">
+                  <span class="stream-icon">📊</span>
+                  <span>Commerce</span>
+                  <small style="font-size:0.70rem; color:var(--text-muted); font-weight:400; margin-top:4px;">Accounts, Economics, OCM, SP, Maths &amp; Stats</small>
+                </label>
+              </div>
+              <div class="stream-card">
+                <input type="radio" id="stream-science" name="stream" value="Science" />
+                <label for="stream-science">
+                  <span class="stream-icon">🔬</span>
+                  <span>Science</span>
+                  <small style="font-size:0.70rem; color:var(--text-muted); font-weight:400; margin-top:4px;">Physics, Chemistry, Biology / Mathematics</small>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Previous School Details -->
+          <div class="section-subhead">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Previous School / 10th Details
+          </div>
+
+          <div class="form-grid">
+            <div class="field full">
+              <label for="f-prev-school">Previous School / Institution Name <span class="req">*</span></label>
+              <input type="text" id="f-prev-school" name="prevSchool" placeholder="e.g. Zaheeruddin High School, Aurangabad" required />
+              <span class="error-msg">⚠ Previous school name is required</span>
+            </div>
+
+            <div class="field">
+              <label for="f-board">Board / University <span class="req">*</span></label>
+              <select id="f-board" name="board" required>
+                <option value="">— Select Board —</option>
+                <option value="SSC (Maharashtra)">SSC (Maharashtra)</option>
+                <option value="CBSE">CBSE</option>
+                <option value="ICSE">ICSE</option>
+                <option value="State Board (Other)">State Board (Other)</option>
+                <option value="NIOS">NIOS</option>
+              </select>
+              <span class="error-msg">⚠ Please select your board</span>
+            </div>
+
+            <div class="field">
+              <label for="f-tenth-year">Year of Passing 10th <span class="req">*</span></label>
+              <select id="f-tenth-year" name="tenthYear" required>
+                <option value="">— Select Year —</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+                <option value="2020">2020</option>
+              </select>
+              <span class="error-msg">⚠ Please select year</span>
+            </div>
+
+            <div class="field">
+              <label for="f-tenth-pct">10th Percentage <span class="req">*</span></label>
+              <input type="number" id="f-tenth-pct" name="tenthPct" placeholder="e.g. 78.50" min="33" max="100" step="0.01" required />
+              <span class="error-msg">⚠ Percentage is required (33–100)</span>
+            </div>
+
+            <div class="field">
+              <label for="f-seat-no">10th Seat Number <span class="req">*</span></label>
+              <input type="text" id="f-seat-no" name="seatNo" placeholder="e.g. 1234567" required />
+              <span class="error-msg">⚠ Seat number is required</span>
+            </div>
+
+            <div class="field">
+              <label for="f-medium">Medium of Instruction</label>
+              <select id="f-medium" name="medium">
+                <option value="">— Select Medium —</option>
+                <option value="Marathi">Marathi</option>
+                <option value="Urdu">Urdu</option>
+                <option value="English">English</option>
+                <option value="Semi-English">Semi-English</option>
+                <option value="Hindi">Hindi</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-nav">
+            <button class="btn btn-outline" id="btn-prev-2" aria-label="Go back to personal info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              Back
+            </button>
+            <button class="btn btn-primary btn-next" id="btn-next-2" aria-label="Go to document upload">
+              Next — Upload Documents
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div><!-- /form-step-2 -->
+
+
+        <!-- ═══ STEP 3: Document Upload ═══ -->
+        <div class="form-step" id="form-step-3">
+          <div class="step-header">
+            <div class="step-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Step 3 of 4 · Document Upload
+            </div>
+            <h2 class="step-title">Upload Documents</h2>
+            <p class="step-desc">Upload your passport photo, SSC marksheet, and Aadhaar card. Max 5MB per file. Accepted: JPG, PNG, PDF.</p>
+          </div>
+
+          <div class="form-grid">
+
+            <!-- Passport Photo -->
+            <div class="field">
+              <label>Passport-Size Photo <span class="req">*</span></label>
+              <div class="file-upload-area" id="photo-upload-area" tabindex="0" role="button" aria-label="Upload passport photo">
+                <input type="file" id="f-photo" name="photo" accept="image/jpg,image/jpeg,image/png" aria-label="Upload photo" />
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">Click to upload photo</div>
+                <div class="upload-hint">JPG or PNG · Max 5MB<br>Passport size, white background</div>
+                <div class="upload-progress-bar" id="photo-progress-bar"><div class="upload-progress-fill" id="photo-progress-fill"></div></div>
+                <div class="upload-filename" id="photo-filename"></div>
+              </div>
+            </div>
+
+            <!-- SSC Marksheet -->
+            <div class="field">
+              <label>SSC (10th) Marksheet <span class="req">*</span></label>
+              <div class="file-upload-area" id="marksheet-upload-area" tabindex="0" role="button" aria-label="Upload marksheet">
+                <input type="file" id="f-marksheet" name="marksheet" accept="image/*,application/pdf" aria-label="Upload marksheet" />
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">Click to upload marksheet</div>
+                <div class="upload-hint">JPG, PNG or PDF · Max 5MB<br>Clear scan of original marksheet</div>
+                <div class="upload-progress-bar" id="marksheet-progress-bar"><div class="upload-progress-fill" id="marksheet-progress-fill"></div></div>
+                <div class="upload-filename" id="marksheet-filename"></div>
+              </div>
+            </div>
+
+            <!-- Aadhaar Card -->
+            <div class="field">
+              <label>Aadhaar Card <span class="req">*</span></label>
+              <div class="file-upload-area" id="aadhaar-upload-area" tabindex="0" role="button" aria-label="Upload Aadhaar card">
+                <input type="file" id="f-aadhaar-doc" name="aadhaarDoc" accept="image/*,application/pdf" aria-label="Upload Aadhaar card" />
+                <div class="upload-icon">🪪</div>
+                <div class="upload-text">Click to upload Aadhaar</div>
+                <div class="upload-hint">JPG, PNG or PDF · Max 5MB<br>Both sides if possible</div>
+                <div class="upload-progress-bar" id="aadhaar-progress-bar"><div class="upload-progress-fill" id="aadhaar-progress-fill"></div></div>
+                <div class="upload-filename" id="aadhaar-filename"></div>
+              </div>
+            </div>
+
+          </div><!-- /.form-grid -->
+
+          <!-- Guidelines -->
+          <div style="background:rgba(6,182,212,0.06); border:1px solid rgba(6,182,212,0.20); border-radius:var(--radius-sm); padding:16px 20px; margin-top:20px;">
+            <p style="font-size:0.83rem; font-weight:700; color:#0e7490; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+              <span>📋</span> Upload Guidelines
+            </p>
+            <ul style="font-size:0.80rem; color:var(--text-secondary); line-height:2.1; padding-left:18px;">
+              <li>Photo: Recent (last 6 months), passport-size, white background, JPG/PNG.</li>
+              <li>Marksheet: All marks clearly visible. JPG, PNG or PDF.</li>
+              <li>Aadhaar Card: Name &amp; 12-digit number clearly legible. JPG, PNG or PDF.</li>
+              <li>Maximum file size: <strong>5MB</strong> per document.</li>
+              <li>Blurry or illegible documents may result in application rejection.</li>
+            </ul>
+          </div>
+
+          <div class="form-nav">
+            <button class="btn btn-outline" id="btn-prev-3" aria-label="Go back to academic details">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              Back
+            </button>
+            <button class="btn btn-primary btn-next" id="btn-next-3" aria-label="Review your application">
+              Review Application
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div><!-- /form-step-3 -->
+
+
+        <!-- ═══ STEP 4: Review & Submit ═══ -->
+        <div class="form-step" id="form-step-4">
+          <div class="step-header">
+            <div class="step-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Step 4 of 4 · Review &amp; Submit
+            </div>
+            <h2 class="step-title">Review &amp; Submit</h2>
+            <p class="step-desc">Please review all details carefully before submitting. You cannot edit after submission.</p>
+          </div>
+
+          <!-- Personal Info Review -->
+          <div class="review-section">
+            <h4>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Personal Information
+            </h4>
+            <div class="review-grid">
+              <div class="review-item"><label>Full Name</label><span id="rv-name">—</span></div>
+              <div class="review-item"><label>Father's Name</label><span id="rv-father">—</span></div>
+              <div class="review-item"><label>Mother's Name</label><span id="rv-mother">—</span></div>
+              <div class="review-item"><label>Date of Birth</label><span id="rv-dob">—</span></div>
+              <div class="review-item"><label>Gender</label><span id="rv-gender">—</span></div>
+              <div class="review-item"><label>Blood Group</label><span id="rv-blood">—</span></div>
+              <div class="review-item"><label>Mobile Number</label><span id="rv-mobile">—</span></div>
+              <div class="review-item"><label>Email Address</label><span id="rv-email">—</span></div>
+              <div class="review-item"><label>Aadhaar Number</label><span id="rv-aadhaar">—</span></div>
+              <div class="review-item"><label>Category</label><span id="rv-category">—</span></div>
+              <div class="review-item"><label>Religion</label><span id="rv-religion">—</span></div>
+              <div class="review-item"><label>Nationality</label><span id="rv-nationality">—</span></div>
+              <div class="review-item" style="grid-column:1/-1"><label>Full Address</label><span id="rv-address" style="display:block; line-height:1.6">—</span></div>
+              <div class="review-item"><label>City</label><span id="rv-city">—</span></div>
+              <div class="review-item"><label>State</label><span id="rv-state">—</span></div>
+              <div class="review-item"><label>PIN Code</label><span id="rv-pin">—</span></div>
+            </div>
+          </div>
+
+          <!-- Academic Review -->
+          <div class="review-section">
+            <h4>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              Academic Details
+            </h4>
+            <div class="review-grid">
+              <div class="review-item"><label>Standard</label><span id="rv-standard">—</span></div>
+              <div class="review-item"><label>Stream</label><span id="rv-stream" class="stream-badge">—</span></div>
+              <div class="review-item"><label>Previous School</label><span id="rv-prev-school">—</span></div>
+              <div class="review-item"><label>Board</label><span id="rv-board">—</span></div>
+              <div class="review-item"><label>Passing Year</label><span id="rv-tenth-year">—</span></div>
+              <div class="review-item"><label>10th Percentage</label><span id="rv-tenth-pct">—</span></div>
+              <div class="review-item"><label>Seat Number</label><span id="rv-seat-no">—</span></div>
+              <div class="review-item"><label>Medium</label><span id="rv-medium">—</span></div>
+            </div>
+          </div>
+
+          <!-- Documents Review -->
+          <div class="review-section">
+            <h4>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Uploaded Documents
+            </h4>
+            <div class="review-grid">
+              <div class="review-item"><label>Passport Photo</label><span id="rv-photo">—</span></div>
+              <div class="review-item"><label>SSC Marksheet</label><span id="rv-marksheet">—</span></div>
+              <div class="review-item"><label>Aadhaar Card</label><span id="rv-aadhaar-doc">—</span></div>
+            </div>
+          </div>
+
+          <!-- Declaration -->
+          <div class="field" style="margin-top:12px;">
+            <div class="check-group">
+              <div class="check-option">
+                <input type="checkbox" id="f-declaration" name="declaration" required />
+                <label for="f-declaration">
+                  I hereby declare that all the information provided above is true and correct to the best of my knowledge. I understand that any false information may result in cancellation of my admission at Fajandar High School &amp; Junior College Arts, Commerce, and Science, Vahoor.
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- SMS Notice -->
+          <div style="display:flex; align-items:center; gap:10px; background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.15); border-radius:var(--radius-sm); padding:14px 18px; margin-top:14px; font-size:0.83rem; color:var(--text-secondary);">
+            <span style="font-size:1.3rem;">📱</span>
+            <span>An <strong>SMS confirmation</strong> with your Admission ID will be sent to your registered mobile number after successful submission.</span>
+          </div>
+
+          <div class="form-nav">
+            <button class="btn btn-outline" id="btn-prev-4" aria-label="Go back to document upload">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              Back
+            </button>
+            <button class="btn btn-primary" id="submit-btn" aria-label="Submit admission application">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+              Submit Application
+            </button>
+          </div>
+        </div><!-- /form-step-4 -->
+
+      </div><!-- /.form-card -->
+    </div><!-- /.form-page-body -->
+  </section><!-- /#page-form -->
+
+
+  <!-- ══════════════════════════════════════
+       PAGE 3 — SUCCESS / DASHBOARD
+  ══════════════════════════════════════ -->
+  <section class="page" id="page-success" aria-label="Admission successful">
+    <div id="printable-area">
+    <div class="success-page-inner">
+
+      <div class="success-card">
+
+        <!-- Success Hero -->
+        <div class="success-hero">
+          <div class="success-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <h1 class="success-title">Application Submitted! 🎉</h1>
+          <p class="success-subtitle">
+            Congratulations, <strong id="success-name">Student</strong>!<br>
+            Your application for <strong id="success-stream-label"></strong> has been successfully submitted to<br>
+            <strong>Fajandar High School &amp; Junior College Arts, Commerce, and Science, Vahoor</strong>.
+          </p>
+
+          <!-- Admission ID Card -->
+          <div class="admission-id-card">
+            <div class="admission-id-label">Your Admission ID</div>
+            <div class="admission-id-value" id="success-admission-id">FJD-2025-XXXXXX</div>
+          </div>
+
+          <!-- Status Badge -->
+          <div style="margin-bottom:12px;">
+            <span class="status-badge submitted">
+              <span class="status-dot"></span>
+              Application Submitted
+            </span>
+          </div>
+
+          <!-- SMS Notice -->
+          <div class="sms-notice">
+            <span class="sms-icon">📱</span>
+            <span>
+              SMS confirmation sent to <strong id="success-mobile"></strong>.
+              Please save your Admission ID for future reference.
+            </span>
+          </div>
+        </div><!-- /.success-hero -->
+
+        <!-- Dashboard Body -->
+        <div class="dashboard-body">
+
+          <!-- Dashboard Header + Actions -->
+          <div class="dashboard-header">
+            <div class="dashboard-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              Student Dashboard
+            </div>
+            <div class="dashboard-actions no-print">
+              <button class="btn btn-outline btn-sm" id="btn-print" onclick="window.print()" aria-label="Print admission form">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Print
+              </button>
+              <button class="btn btn-primary btn-sm" id="btn-pdf" aria-label="Download PDF">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download PDF
+              </button>
+            </div>
+          </div>
+
+          <!-- Personal Info Dashboard Section -->
+          <div class="dash-section">
+            <div class="dash-section-head">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Personal Information
+            </div>
+            <div class="dash-grid">
+              <div class="dash-item"><label>Full Name</label><span id="dash-name">—</span></div>
+              <div class="dash-item"><label>Father's Name</label><span id="dash-father">—</span></div>
+              <div class="dash-item"><label>Mother's Name</label><span id="dash-mother">—</span></div>
+              <div class="dash-item"><label>Date of Birth</label><span id="dash-dob">—</span></div>
+              <div class="dash-item"><label>Gender</label><span id="dash-gender">—</span></div>
+              <div class="dash-item"><label>Blood Group</label><span id="dash-blood">—</span></div>
+              <div class="dash-item"><label>Mobile Number</label><span id="dash-mobile">—</span></div>
+              <div class="dash-item"><label>Email Address</label><span id="dash-email">—</span></div>
+              <div class="dash-item"><label>Aadhaar Number</label><span id="dash-aadhaar">—</span></div>
+              <div class="dash-item"><label>Category</label><span id="dash-category">—</span></div>
+              <div class="dash-item"><label>Religion</label><span id="dash-religion">—</span></div>
+              <div class="dash-item"><label>Nationality</label><span id="dash-nationality">—</span></div>
+              <div class="dash-item" style="grid-column:1/-1"><label>Full Address</label><span id="dash-address">—</span></div>
+              <div class="dash-item"><label>City</label><span id="dash-city">—</span></div>
+              <div class="dash-item"><label>State</label><span id="dash-state">—</span></div>
+              <div class="dash-item"><label>PIN Code</label><span id="dash-pin">—</span></div>
+            </div>
+          </div>
+
+          <!-- Academic Dashboard Section -->
+          <div class="dash-section">
+            <div class="dash-section-head">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              Academic Details
+            </div>
+            <div class="dash-grid">
+              <div class="dash-item"><label>Standard Applying For</label><span id="dash-standard">—</span></div>
+              <div class="dash-item"><label>Stream</label><span id="dash-stream">—</span></div>
+              <div class="dash-item"><label>Previous School</label><span id="dash-prev-school">—</span></div>
+              <div class="dash-item"><label>Board</label><span id="dash-board">—</span></div>
+              <div class="dash-item"><label>Passing Year</label><span id="dash-year">—</span></div>
+              <div class="dash-item"><label>10th Percentage</label><span id="dash-pct">—</span></div>
+              <div class="dash-item"><label>Seat Number</label><span id="dash-seat">—</span></div>
+              <div class="dash-item"><label>Medium</label><span id="dash-medium">—</span></div>
+            </div>
+          </div>
+
+          <!-- Documents Section -->
+          <div class="dash-section">
+            <div class="dash-section-head">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Uploaded Documents
+            </div>
+            <div class="doc-grid">
+              <div class="doc-card">
+                <div class="doc-icon">📷</div>
+                <div class="doc-info">
+                  <div class="doc-name">Passport Photo</div>
+                  <div class="doc-status" id="doc-photo-status">✓ Uploaded</div>
+                </div>
+              </div>
+              <div class="doc-card">
+                <div class="doc-icon">📄</div>
+                <div class="doc-info">
+                  <div class="doc-name">SSC Marksheet</div>
+                  <div class="doc-status" id="doc-marksheet-status">✓ Uploaded</div>
+                </div>
+              </div>
+              <div class="doc-card">
+                <div class="doc-icon">🪪</div>
+                <div class="doc-info">
+                  <div class="doc-name">Aadhaar Card</div>
+                  <div class="doc-status" id="doc-aadhaar-status">✓ Uploaded</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Next Steps -->
+          <div class="next-steps">
+            <div class="next-steps-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              What Happens Next?
+            </div>
+            <ul class="step-list">
+              <li><span class="step-num">1</span><span>Visit the college office with <strong>original documents</strong> within 7 working days.</span></li>
+              <li><span class="step-num">2</span><span>Bring your <strong>Admission ID: <span id="next-steps-id"></span></strong> and 2 passport-size photographs.</span></li>
+              <li><span class="step-num">3</span><span>Pay the <strong>admission fees</strong> at the college cashier counter.</span></li>
+              <li><span class="step-num">4</span><span>Collect your <strong>college ID card</strong> and fee receipt after payment.</span></li>
+              <li><span class="step-num">5</span><span>Classes commence as per the college academic calendar. Check the notice board for your schedule.</span></li>
+            </ul>
+          </div>
+
+          <!-- College Address -->
+          <div style="font-size:0.80rem; color:var(--text-muted); text-align:center; line-height:1.8; padding:16px 0 0;">
+            <strong style="color:var(--text-secondary);">Fajandar High School &amp; Junior College</strong><br>
+            Arts, Commerce, and Science · Vahoor<br>
+            📞 Contact the college office for more information
+          </div>
+
+          <!-- New Application Button -->
+          <div style="margin-top:24px; text-align:center;" class="no-print">
+            <button class="btn btn-outline" onclick="location.reload()" style="margin: 0 auto; display:inline-flex;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><path d="M3 12a9 9 0 009 9 9.75 9.75 0 006.74-2.74L21 16"/><path d="M21 7l-3.26-3.26A9.75 9.75 0 0012 3a9 9 0 00-9 9"/></svg>
+              Start New Application
+            </button>
+          </div>
+
+        </div><!-- /.dashboard-body -->
+      </div><!-- /.success-card -->
+
+    </div><!-- /.success-page-inner -->
+    </div><!-- /#printable-area -->
+  </section><!-- /#page-success -->
+
+
+<!-- ========================================================= -->
+<!-- ADMIN LOGIN PAGE -->
+<!-- ========================================================= -->
+
+
+
+<section class="page" id="page-admin-login">
+
+  <div class="auth-card">
+
+    <h2>College Administration</h2>
+    <p>Principal / Office Staff Login</p>
+
+    <div class="field">
+      <label>Username</label>
+     <input
+    type="email"
+    id="admin-email"
+    placeholder="admin@fajandarcollege.in"
+    autocomplete="email">
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <input
+    type="password"
+    id="admin-password"
+    placeholder="Enter Password"
+    autocomplete="current-password">
+    </div>
+
+    <button class="btn btn-primary" id="btn-admin-submit">
+      Login
+    </button>
+
+  </div>
+
+</section>
+
+
+
+<section class="page" id="page-admin-dashboard">
+
+<div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+
+        <div class="admin-logo">
+            <img src="assets/logo.jpg" alt="College Logo">
+            <h2>Admin Panel</h2>
+        </div>
+
+        <nav class="admin-menu">
+
+
+<button
+    class="admin-menu-item active"
+    onclick="setActiveMenu(this); loadAdminDashboard()">
+    🏠 Dashboard
+</button>
+
+
+
+
+<button
+    class="admin-menu-item"
+    onclick="setActiveMenu(this); loadAdminDashboard()">
+    👨‍🎓 Students
+</button>
+
+
+<button
+    class="admin-menu-item"
+   onclick="setActiveMenu(this); loadPendingAdmissions()">
+    ⏳ Pending
+</button>
+
+
+
+            <button class="admin-menu-item"
+            onclick="setActiveMenu(this); loadApprovedAdmissions()">
+                ✅ Approved
+            </button>
+
+            <button class="admin-menu-item"
+           onclick="setActiveMenu(this); loadRejectedAdmissions()">
+                ❌ Rejected
+            </button>
+
+            <button class="admin-menu-item">
+                📄 Reports
+            </button>
+
+            <button class="admin-menu-item">
+                ⚙ Settings
+            </button>
+
+        </nav>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="admin-main">
+
+        <div class="admin-header">
+
+            <div>
+                <h1>Dashboard</h1>
+                <p>Welcome back,
+                    <span id="admin-name">
+                        Administrator
+                    </span>
+                </p>
+            </div>
+<div class="admin-user">
+
+    <span id="admin-role">
+        Super Admin
+    </span>
+
+    <button
+        id="btn-admin-logout"
+        class="btn btn-danger">
+        Logout
+    </button>
+
+</div>
+
+        </div>
+
+        <!-- Stats -->
+
+        <div class="admin-stats">
+
+            <div class="stat-card">
+                <h3>Total Admissions</h3>
+                <h1 id="total-admissions">0</h1>
+            </div>
+
+            <div class="stat-card">
+                <h3>Pending</h3>
+                <h1 id="pending-admissions">0</h1>
+            </div>
+
+            <div class="stat-card">
+                <h3>Approved</h3>
+                <h1 id="approved-admissions">0</h1>
+            </div>
+
+            <div class="stat-card">
+                <h3>Rejected</h3>
+                <h1 id="rejected-admissions">0</h1>
+            </div>
+
+        </div>
+
+        <!-- Student Table -->
+
+        <div class="admin-table">
+
+            <div class="table-header">
+
+                <h2>Admissions</h2>
+
+                <input
+                    id="student-search"
+                    type="text"
+                    placeholder="Search Student">
+
+            </div>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Standard</th>
+                        <th>Stream</th>
+                        <th>Mobile</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="students-table-body">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </main>
+
+</div>
+
+</section>
+
+
+</div><!-- /#app -->
+
+<!-- ══════════════════════════════════════
+     SITE FOOTER
+══════════════════════════════════════ -->
+<footer class="site-footer" id="site-footer">
+  <div class="footer-college">
+    Fajandar High School &amp; Junior College — Arts, Commerce, and Science, Vahoor
+  </div>
+  <div class="footer-copy">
+    &copy; <span id="footer-year"></span> All Rights Reserved &nbsp;|&nbsp;
+    Designed &amp; Developed by <strong>Mukadam Zakariya Zubair Ahmed</strong>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="firebase-config.js"></script>
+<script src="app.js"></script>
+<script>
+  document.getElementById('footer-year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
