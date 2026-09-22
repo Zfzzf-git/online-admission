@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Admission | Fajandar High School &amp; Junior College, Vahoor</title>
+  <meta name="description" content="Apply online for Standard 11th &amp; 12th admission at Fajandar High School &amp; Junior College Arts, Commerce, and Science, Vahoor." />
+  <meta name="keywords" content="Fajandar Junior College, Vahoor, Online Admission, 11th, 12th, Arts, Commerce, Science" />
+  <meta property="og:title" content="Online Admission — Fajandar Jr. College, Vahoor" />
+  <meta property="og:description" content="Secure your seat in Standard 11th or 12th at Fajandar High School &amp; Junior College." />
+  <meta name="theme-color" content="#3b82f6" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Firebase SDK v9 Compat (CDN) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+  <!-- jsPDF for PDF Download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Chart.js CDN for Reports Page Analytics Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- ╔════════════════════════════════════════╗
+     ║        ANIMATED BACKGROUND             ║
+     ╚════════════════════════════════════════╝ -->
+<div class="bg-canvas" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- ╔════════════════════════════════════════╗
+     ║        LOADING OVERLAY                 ║
+     ╚════════════════════════════════════════╝ -->
+<div class="loading-overlay" id="loading-overlay" role="status" aria-live="polite">
+  <div class="loading-spinner-big"></div>
+  <p class="loading-text">Please wait…</p>
+</div>
+
+<!-- ╔════════════════════════════════════════╗
+     ║        TOAST CONTAINER                 ║
+     ╚════════════════════════════════════════╝ -->
+<div class="toast-container" id="toast-container" aria-live="assertive"></div>
+
+<!-- ╔════════════════════════════════════════╗
+     ║        MAIN APP SHELL                  ║
+     ╚════════════════════════════════════════╝ -->
+<div id="app">
+
+  <!-- ══════════════════════════════════════
+       TOP NAVBAR  (hidden on login page)
+  ══════════════════════════════════════ -->
+  <nav class="navbar" id="main-navbar" style="display:none;" aria-label="Main navigation">
+    <div class="navbar-brand">
+      <img class="navbar-logo" src="assets/logo.jpg" alt="Fajandar College Logo" onerror="this.style.display='none'" />
+      <div class="navbar-title">
+        Fajandar H.S. &amp; Jr. College
+        <span>Vahoor — Online Admission Portal</span>
+      </div>
+    </div>
+    <div class="navbar-user">
+      <img class="user-avatar" id="nav-user-avatar" src="" alt="User Avatar" style="display:none;" />
+      <span class="user-name" id="nav-user-name"></span>
+      <button class="btn-logout" id="btn-logout" title="Logout">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Logout
+      </button>
+    </div>
+  </nav>
+
+
+  <!-- ══════════════════════════════════════
+       PAGE 1 — LOGIN
+  ══════════════════════════════════════ -->
+  <section class="page active" id="page-login" aria-label="Login page">
+    <div class="login-card" role="main">
+
+      <!-- College Identity -->
+      <div class="college-logo-wrap">
+        <img class="college-logo" src="assets/logo.jpg" alt="Fajandar High School &amp; Junior College logo" onerror="this.style.display='none'" />
+        <div>
+          <div class="college-name">Fajandar High School &amp; Junior College</div>
+          <div class="college-sub">Arts · Commerce · Science &nbsp;|&nbsp; Vahoor</div>
+        </div>
+      </div>
+
+      <!-- Heading -->
+      <h1 class="login-title">Online Admission Portal</h1>
+      <p class="login-subtitle">
+        Apply for Standard <strong>11th</strong> or <strong>12th</strong> admission — 2025–26
+      </p>
+
+      <!-- Demo Mode Notice -->
+      <div id="demo-mode-notice" class="demo-notice">
+        <span style="font-size:1.3rem">⚙️</span>
+        <span><strong>Demo Mode Active:</strong> Firebase config not set. You can still explore the full app — forms, steps, dashboard &amp; PDF download work. To go live, fill in <code>firebase-config.js</code> with your Firebase &amp; MSG91 credentials.</span>
+      </div>
+
+      <!-- Google Sign-In Button -->
+      <button class="btn-google" id="btn-google-signin" aria-label="Sign in with Google">
+        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.29-8.16 2.29-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <div style="margin-top:15px;">
+        <button class="btn btn-outline" id="btn-open-admin-login">
+          🔐 Admin Login
+        </button>
+      </div>
+
+      <div class="login-divider">Secure &amp; Official</div>
+
+      <!-- Info notice -->
+      <div class="login-notice">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" width="18" height="18">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>After successful admission, an <strong>SMS confirmation</strong> with your Admission ID will be sent to your registered mobile number. Keep your 10th marksheet, passport photo, and Aadhaar card ready.</span>
+      </div>
+
+      <!-- Feature Badges -->
+      <div class="login-features">
+        <span class="feature-badge">🔒 Google Secure Login</span>
+        <span class="feature-badge">📱 SMS Confirmation</span>
+        <span class="feature-badge">📄 PDF Download</span>
+        <span class="feature-badge">🎓 Instant Admission ID</span>
+      </div>
+
+    </div><!-- /.login-card -->
+  </section><!-- /#page-login -->
+
+
+  <!-- ══════════════════════════════════════
+       PAGE 2 — ADMISSION FORM
+  ══════════════════════════════════════ -->
+  <section class="page" id="page-form" aria-label="Admission form">
+    <div class="form-page-body">
+
+      <!-- ── Stepper ── -->
+      <nav class="stepper" aria-label="Form progress">
+        <div class="stepper-line" aria-hidden="true"></div>
+        <div class="stepper-progress" id="stepper-progress" aria-hidden="true"></div>
+
+        <div class="step-item active" id="step-item-1">
+          <div class="step-circle">1</div>
+          <span class="step-label">Personal</span>
+        </div>
+        <div class="step-item" id="step-item-2">
+          <div class="step-circle">2</div>
+          <span class="step-label">Academic</span>
+        </div>
+        <div class="step-item" id="step-item-3">
+          <div class="step-circle">3</div>
+          <span class="step-label">Documents</span>
+        </div>
+        <div class="step-item" id="step-item-4">
+          <div class="step-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+          </div>
+          <span class="step-label">Review</span>
+        </div>
+      </nav>
+
+      <!-- ── Form Card ── -->
+      <div class="form-card" role="main">
+
+
+        <!-- ═══ STEP 1: Personal Information ═══ -->
+        <div class="form-step active" id="form-step-1">
+          <div class="step-header">
+            <div class="step-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Step 1 of 4 · Personal Information
+            </div>
+            <h2 class="step-title">Personal Details</h2>
+            <p class="step-desc">Fill in your personal details as per your 10th certificate. Fields marked <span style="color:var(--danger)">*</span> are required.</p>
+          </div>
+
+          <div class="form-grid">
+
+            <!-- Full Name -->
+            <div class="field full">
+              <label for="f-name">Full Name (as per 10th certificate) <span class="req">*</span></label>
+              <input type="text" id="f-name" name="fullName" placeholder="e.g. Mohammed Aryan Khan" required autocomplete="name" />
+              <span class="error-msg">⚠ Full name is required</span>
+            </div>
+
+            <!-- Father's Name -->
+            <div class="field">
+              <label for="f-father">Father's Name <span class="req">*</span></label>
+              <input type="text" id="f-father" name="fatherName" placeholder="e.g. Ahmed Raza Khan" required />
+              <span class="error-msg">⚠ Father's name is required</span>
+            </div>
+
+            <!-- Mother's Name -->
+            <div class="field">
+              <label for="f-mother">Mother's Name <span class="req">*</span></label>
+              <input type="text" id="f-mother" name="motherName" placeholder="e.g. Fatima Begum Khan" required />
+              <span class="error-msg">⚠ Mother's name is required</span>
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="field">
+              <label for="f-dob">Date of Birth <span class="req">*</span></label>
+              <input type="date" id="f-dob" name="dob" required max="2013-12-31" />
+              <span class="error-msg">⚠ Date of birth is required</span>
+            </div>
+
+            <!-- Gender -->
+            <div class="field">
+              <label>Gender <span class="req">*</span></label>
+              <div class="radio-group">
+                <div class="radio-option">
+                  <input type="radio" id="g-male" name="gender" value="Male" required />
+                  <label for="g-male">♂ Male</label>
+                </div>
+                <div class="radio-option">
+                  <input type="radio" id="g-female" name="gender" value="Female" />
+                  <label for="g-female">♀ Female</label>
+                </div>
+                <div class="radio-option">
+                  <input type="radio" id="g-other" name="gender" value="Other" />
+                  <label for="g-other">⚧ Other</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mobile -->
+            <div class="field">
+              <label for="f-mobile">Mobile Number <span class="req">*</span></label>
+              <input type="tel" id="f-mobile" name="mobile" placeholder="10-digit mobile number" required maxlength="10" pattern="[6-9]\d{9}" autocomplete="tel" />
+              <span class="error-msg">⚠ Enter a valid 10-digit Indian mobile number</span>
+            </div>
+
+            <!-- Email -->
+            <div class="field">
+              <label for="f-email">Email Address <span class="req">*</span></label>
+              <input type="email" id="f-email" name="email" placeholder="your@email.com" required autocomplete="email" />
+              <span class="error-msg">⚠ Enter a valid email address</span>
+            </div>
+
+            <!-- Aadhaar Number -->
+            <div class="field">
+              <label for="f-aadhaar">Aadhaar Number <span class="req">*</span></label>
+              <input type="text" id="f-aadhaar" name="aadhaar" placeholder="12-digit Aadhaar number" required maxlength="14" />
+              <span class="error-msg">⚠ Enter a valid 12-digit Aadhaar number</span>
+            </div>
+
+            <!-- Blood Group -->
+            <div class="field">
+              <label for="f-blood">Blood Group</label>
+              <select id="f-blood" name="bloodGroup">
+                <option value="">— Select Blood Group —</option>
+                <option value="A+">A+</option>
+                <option value="A-">A−</option>
+                <option value="B+">B+</option>
+                <option value="B-">B−</option>
+                <option value="O+">O+</option>
+                <option value="O-">O−</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB−</option>
+              </select>
+            </div>
+
+            <!-- Nationality -->
+            <div class="field">
+              <label for="f-nationality">Nationality</label>
+              <input type="text" id="f-nationality" name="nationality" value="Indian" placeholder="Indian" />
+            </div>
+
+            <!-- Religion -->
+            <div class="field">
+              <label for="f-religion">Religion</label>
+              <select id="f-religion" name="religion">
+                <option value="">— Select Religion —</option>
+                <option value="Hindu">Hindu</option>
+                <option value="Muslim">Muslim</option>
+                <option value="Christian">Christian</option>
+                <option value="Buddhist">Buddhist</option>
+                <option value="Jain">Jain</option>
+                <option value="Sikh">Sikh</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <!-- Category -->
+            <div class="field">
+              <label for="f-category">Category <span class="req">*</span></label>
+              <select id="f-category" name="category" required>
+                <option value="">— Select Category —</option>
+                <option value="General">General (Open)</option>
+                <option value="OBC">OBC</option>
+                <option value="SC">SC</option>
+                <option value="ST">ST</option>
+                <option value="VJNT">VJNT</option>
+                <option value="SBC">SBC</option>
+                <option value="EWS">EWS</option>
+              </select>
+              <span class="error-msg">⚠ Please select a category</span>
+            </div>
+
+            <!-- Address -->
+            <div class="field full">
+              <label for="f-address">Residential Address <span class="req">*</span></label>
+              <textarea id="f-address" name="address" rows="2" placeholder="House no., Street, Village" required></textarea>
+              <span class="error-msg">⚠ Address is required</span>
+            </div>
+
+            <!-- City -->
+            <div class="field">
+              <label for="f-city">City / Village <span class="req">*</span></label>
+              <input type="text" id="f-city" name="city" placeholder="e.g. Aurangabad" required />
+              <span class="error-msg">⚠ City is required</span>
+            </div>
+
+            <!-- State -->
+            <div class="field">
+              <label for="f-state">State <span class="req">*</span></label>
+              <select id="f-state" name="state" required>
+                <option value="">— Select State —</option>
+                <option value="Maharashtra" selected>Maharashtra</option>
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                <option value="Other">Other</option>
+              </select>
+              <span class="error-msg">⚠ State is required</span>
+            </div>
+
+            <!-- PIN Code -->
+            <div class="field">
+              <label for="f-pin">PIN Code <span class="req">*</span></label>
+              <input type="text" id="f-pin" name="pinCode" placeholder="e.g. 431101" required maxlength="6" pattern="[1-9][0-9]{5}" />
+              <span class="error-msg">⚠ Enter a valid 6-digit PIN code</span>
+            </div>
+
+          </div><!-- /.form-grid -->
+
+          <div class="form-nav">
+            <div></div>
+            <button class="btn btn-primary btn-next" id="btn-next-1" aria-label="Go to next step">
+              Next — Academic Details
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div><!-- /form-step-1 -->
+
+
+        <!-- ═══ STEP 2: Academic Details ═══ -->
+        <div class="form-step" id="form-step-2">
+          <div class="step-header">
+            <div class="step-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              Step 2 of 4 · Academic Details
+            </div>
+            <h2 class="step-title">Academic Details</h2>
+            <p class="step-desc">Select your standard, stream, and provide previous school information.</p>
+          </div>
+
+          <!-- Standard Selection -->
+          <div class="field" style="margin-bottom:22px;">
+            <label>Standard / Class Applying For <span class="req">*</span></label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="std-11" name="standard" value="11th" required />
+                <label for="std-11">⭐ 11th Standard</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="std-12" name="standard" value="12th" />
+                <label for="std-12">🏆 12th Standard</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stream Selection -->
+          <div class="field" style="margin-bottom:26px;">
+            <label>Stream <span class="req">*</span></label>
+            <div class="stream-cards">
+              <div class="stream-card">
+                <input type="radio" id="stream-arts" name="stream" value="Arts" />
+                <label for="stream-arts">
+                  <span class="stream-icon">🎨</span>
+                  <span>Arts</span>
+                  <small style="font-size:0.70rem; color:var(--text-muted); font-weight:400; margin-top:4px;">History, Civics, Geography, Marathi, English, Hindi</small>
+                </label>
+              </div>
+              <div class="stream-card">
+                <input type="radio" id="stream-commerce" name="stream" value="Commerce" />
+                <label for="stream-commerce">
+                  <span class="stream-icon">📊</span>
+                  <span>Commerce</span>
+                  <small style="font-size:0.70rem; color:var(--text-muted); font-weight:400; margin-top:4px;">Accounts, Economics, OCM, SP, Maths &amp; Stats</small>
+                </label>
+              </div>
+              <div class="stream-card">
+                <input type="radio" id="stream-science" name="stream" value="Science" />
+                <label for="stream-science">
+                  <span class="stream-icon">🔬</span>
+                  <span>Science</span>
+                  <small style="font-size:0.70rem; color:var(--text-muted); font-weight:400; margin-top:4px;">Physics, Chemistry, Biology / Mathematics</small>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Previous School Details -->
+          <div class="section-subhead">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Previous School / 10th Details
+          </div>
+
+          <div class="form-grid">
+            <div class="field full">
+              <label for="f-prev-school">Previous School / Institution Name <span class="req">*</span></label>
+              <input type="text" id="f-prev-school" name="prevSchool" placeholder="e.g. Zaheeruddin High School, Aurangabad" required />
+              <span class="error-msg">⚠ Previous school name is required</span>
+            </div>
+
+            <div class="field">
+              <label for="f-board">Board / University <span class="req">*</span></label>
+              <select id="f-board" name="board" required>
+                <option value="">— Select Board —</option>
+                <option value="SSC (Maharashtra)">SSC (Maharashtra)</option>
+                <option value="CBSE">CBSE</option>
+                <option value="ICSE">ICSE</option>
+                <option value="State Board (Other)">State Board (Other)</option>
+                <option value="NIOS">NIOS</option>
+              </select>
+              <span class="error-msg">⚠ Please select your board</span>
+            </div>
+
+            <div class="field">
+              <label for="f-tenth-year">Year of Passing 10th <span class="req">*</span></label>
+              <select id="f-tenth-year" name="tenthYear" required>
+                <option value="">— Select Year —</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+                <option value="2020">2020</option>
+              </select>
+              <span class="error-msg">⚠ Please select year</span>
+            </div>
+
+            <div class="field">
+              <label for="f-tenth-pct">10th Percentage <span class="req">*</span></label>
+              <input type="number" id="f-tenth-pct" name="tenthPct" placeholder="e.g. 78.50" min="33" max="100" step="0.01" required />
+              <span class="error-msg">⚠ Percentage is required (33–100)</span>
+            </div>
+
+            <div class="field">
+              <label for="f-seat-no">10th Seat Number <span class="req">*</span></label>
+              <input type="text" id="f-seat-no" name="seatNo" placeholder="e.g. 1234567" required />
+              <span class="error-msg">⚠ Seat number is required</span>
+            </div>
+
+            <div class="field">
+              <label for="f-medium">Medium of Instruction</label>
+              <select id="f-medium" name="medium">
+                <option value="">— Select Medium —</option>
+                <option value="Marathi">Marathi</option>
+                <option value="Urdu">Urdu</option>
+                <option value="English">English</option>
+                <option value="Semi-English">Semi-English</option>
+                <option value="Hindi">Hindi</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-nav">
+            <button class="btn btn-outline" id="btn-prev-2" aria-label="Go back to personal info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              Back
+            </button>
+            <button class="btn btn-primary btn-next" id="btn-next-2" aria-label="Go to document upload">
+              Next — Upload Documents
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div><!-- /form-step-2 -->
+
+
+        <!-- ═══ STEP 3: Document Upload ═══ -->
+        <div class="form-step" id="form-step-3">
+          <div class="step-header">
+            <div class="step-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Step 3 of 4 · Document Upload
+            </div>
+            <h2 class="step-title">Upload Documents</h2>
+            <p class="step-desc">Upload your passport photo, SSC marksheet, and Aadhaar card. Max 5MB per file. Accepted: JPG, PNG, PDF.</p>
+          </div>
+
+          <div class="form-grid">
+
+            <!-- Passport Photo -->
+            <div class="field">
+              <label>Passport-Size Photo <span class="req">*</span></label>
+              <div class="file-upload-area" id="photo-upload-area" tabindex="0" role="button" aria-label="Upload passport photo">
+                <input type="file" id="f-photo" name="photo" accept="image/jpg,image/jpeg,image/png" aria-label="Upload photo" />
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">Click to upload photo</div>
+                <div class="upload-hint">JPG or PNG · Max 5MB<br>Passport size, white background</div>
+                <div class="upload-progress-bar" id="photo-progress-bar"><div class="upload-progress-fill" id="photo-progress-fill"></div></div>
+                <div class="upload-filename" id="photo-filename"></div>
+              </div>
+            </div>
+
+            <!-- SSC Marksheet -->
+            <div class="field">
+              <label>SSC (10th) Marksheet <span class="req">*</span></label>
+              <div class="file-upload-area" id="marksheet-upload-area" tabindex="0" role="button" aria-label="Upload marksheet">
+                <input type="file" id="f-marksheet" name="marksheet" accept="image/*,application/pdf" aria-label="Upload marksheet" />
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">Click to upload marksheet</div>
+                <div class="upload-hint">JPG, PNG or PDF · Max 5MB<br>Clear scan of original marksheet</div>
+                <div class="upload-progress-bar" id="marksheet-progress-bar"><div class="upload-progress-fill" id="marksheet-progress-fill"></div></div>
+                <div class="upload-filename" id="marksheet-filename"></div>
+              </div>
+            </div>
+
+            <!-- Aadhaar Card -->
+            <div class="field">
+              <label>Aadhaar Card <span class="req">*</span></label>
+              <div class="file-upload-area" id="aadhaar-upload-area" tabindex="0" role="button" aria-label="Upload Aadhaar card">
+                <input type="file" id="f-aadhaar-doc" name="aadhaarDoc" accept="image/*,application/pdf" aria-label="Upload Aadhaar card" />
+                <div class="upload-icon">🪪</div>
+                <div class="upload-text">Click to upload Aadhaar</div>
+                <div class="upload-hint">JPG, PNG or PDF · Max 5MB<br>Both sides if possible</div>
+                <div class="upload-progress-bar" id="aadhaar-progress-bar"><div class="upload-progress-fill" id="aadhaar-progress-fill"></div></div>
+                <div class="upload-filename" id="aadhaar-filename"></div>
+              </div>
+            </div>
+
+          </div><!-- /.form-grid -->
+
+          <!-- Guidelines -->
+          <div style="background:rgba(6,182,212,0.06); border:1px solid rgba(6,182,212,0.20); border-radius:var(--radius-sm); padding:16px 20px; margin-top:20px;">
+            <p style="font-size:0.83rem; font-weight:700; color:#0e7490; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+              <span>📋</span> Upload Guidelines
+            </p>
+            <ul style="font-size:0.80rem; color:var(--text-secondary); line-height:2.1; padding-left:18px;">
+              <li>Photo: Recent (last 6 months), passport-size, white background, JPG/PNG.</li>
+              <li>Marksheet: All marks clearly visible. JPG, PNG or PDF.</li>
+              <li>Aadhaar Card: Name &amp; 12-digit number clearly legible. JPG, PNG or PDF.</li>
+              <li>Maximum file size: <strong>5MB</strong> per document.</li>
+              <li>Blurry or illegible documents may result in application rejection.</li>
+            </ul>
+          </div>
+
+          <div class="form-nav">
+            <button class="btn btn-outline" id="btn-prev-3" aria-label="Go back to academic details">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              Back
+            </button>
+            <button class="btn btn-primary btn-next" id="btn-next-3" aria-label="Review your application">
+              Review Application
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div><!-- /form-step-3 -->
+
+
+        <!-- ═══ STEP 4: Review & Submit ═══ -->
+        <div class="form-step" id="form-step-4">
+          <div class="step-header">
+            <div class="step-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Step 4 of 4 · Review &amp; Submit
+            </div>
+            <h2 class="step-title">Review &amp; Submit</h2>
+            <p class="step-desc">Please review all details carefully before submitting. You cannot edit after submission.</p>
+          </div>
+
+          <!-- Personal Info Review -->
+          <div class="review-section">
+            <h4>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Personal Information
+            </h4>
+            <div class="review-grid">
+              <div class="review-item"><label>Full Name</label><span id="rv-name">—</span></div>
+              <div class="review-item"><label>Father's Name</label><span id="rv-father">—</span></div>
+              <div class="review-item"><label>Mother's Name</label><span id="rv-mother">—</span></div>
+              <div class="review-item"><label>Date of Birth</label><span id="rv-dob">—</span></div>
+              <div class="review-item"><label>Gender</label><span id="rv-gender">—</span></div>
+              <div class="review-item"><label>Blood Group</label><span id="rv-blood">—</span></div>
+              <div class="review-item"><label>Mobile Number</label><span id="rv-mobile">—</span></div>
+              <div class="review-item"><label>Email Address</label><span id="rv-email">—</span></div>
+              <div class="review-item"><label>Aadhaar Number</label><span id="rv-aadhaar">—</span></div>
+              <div class="review-item"><label>Category</label><span id="rv-category">—</span></div>
+              <div class="review-item"><label>Religion</label><span id="rv-religion">—</span></div>
+              <div class="review-item"><label>Nationality</label><span id="rv-nationality">—</span></div>
+              <div class="review-item" style="grid-column:1/-1"><label>Full Address</label><span id="rv-address" style="display:block; line-height:1.6">—</span></div>
+              <div class="review-item"><label>City</label><span id="rv-city">—</span></div>
+              <div class="review-item"><label>State</label><span id="rv-state">—</span></div>
+              <div class="review-item"><label>PIN Code</label><span id="rv-pin">—</span></div>
+            </div>
+          </div>
+
+          <!-- Academic Review -->
+          <div class="review-section">
+            <h4>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              Academic Details
+            </h4>
+            <div class="review-grid">
+              <div class="review-item"><label>Standard</label><span id="rv-standard">—</span></div>
+              <div class="review-item"><label>Stream</label><span id="rv-stream" class="stream-badge">—</span></div>
+              <div class="review-item"><label>Previous School</label><span id="rv-prev-school">—</span></div>
+              <div class="review-item"><label>Board</label><span id="rv-board">—</span></div>
+              <div class="review-item"><label>Passing Year</label><span id="rv-tenth-year">—</span></div>
+              <div class="review-item"><label>10th Percentage</label><span id="rv-tenth-pct">—</span></div>
+              <div class="review-item"><label>Seat Number</label><span id="rv-seat-no">—</span></div>
+              <div class="review-item"><label>Medium</label><span id="rv-medium">—</span></div>
+            </div>
+          </div>
+
+          <!-- Documents Review -->
+          <div class="review-section">
+            <h4>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Uploaded Documents
+            </h4>
+            <div class="review-grid">
+              <div class="review-item"><label>Passport Photo</label><span id="rv-photo">—</span></div>
+              <div class="review-item"><label>SSC Marksheet</label><span id="rv-marksheet">—</span></div>
+              <div class="review-item"><label>Aadhaar Card</label><span id="rv-aadhaar-doc">—</span></div>
+            </div>
+          </div>
+
+          <!-- Declaration -->
+          <div class="field" style="margin-top:12px;">
+            <div class="check-group">
+              <div class="check-option">
+                <input type="checkbox" id="f-declaration" name="declaration" required />
+                <label for="f-declaration">
+                  I hereby declare that all the information provided above is true and correct to the best of my knowledge. I understand that any false information may result in cancellation of my admission at Fajandar High School &amp; Junior College Arts, Commerce, and Science, Vahoor.
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- SMS Notice -->
+          <div style="display:flex; align-items:center; gap:10px; background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.15); border-radius:var(--radius-sm); padding:14px 18px; margin-top:14px; font-size:0.83rem; color:var(--text-secondary);">
+            <span style="font-size:1.3rem;">📱</span>
+            <span>An <strong>SMS confirmation</strong> with your Admission ID will be sent to your registered mobile number after successful submission.</span>
+          </div>
+
+          <div class="form-nav">
+            <button class="btn btn-outline" id="btn-prev-4" aria-label="Go back to document upload">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              Back
+            </button>
+            <button class="btn btn-primary" id="submit-btn" aria-label="Submit admission application">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+              Submit Application
+            </button>
+          </div>
+        </div><!-- /form-step-4 -->
+
+      </div><!-- /.form-card -->
+    </div><!-- /.form-page-body -->
+  </section><!-- /#page-form -->
+
+
+  <!-- ══════════════════════════════════════
+       PAGE 3 — SUCCESS / DASHBOARD
+  ══════════════════════════════════════ -->
+  <section class="page" id="page-success" aria-label="Admission successful">
+    <div id="printable-area">
+    <div class="success-page-inner">
+
+      <div class="success-card">
+
+        <!-- Success Hero -->
+        <div class="success-hero">
+          <div class="success-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <h1 class="success-title">Application Submitted! 🎉</h1>
+          <p class="success-subtitle">
+            Congratulations, <strong id="success-name">Student</strong>!<br>
+            Your application for <strong id="success-stream-label"></strong> has been successfully submitted to<br>
+            <strong>Fajandar High School &amp; Junior College Arts, Commerce, and Science, Vahoor</strong>.
+          </p>
+
+          <!-- Admission ID Card -->
+          <div class="admission-id-card">
+            <div class="admission-id-label">Your Admission ID</div>
+            <div class="admission-id-value" id="success-admission-id">FJD-2025-XXXXXX</div>
+          </div>
+
+          <!-- Status Badge -->
+          <div style="margin-bottom:12px;">
+            <span class="status-badge submitted">
+              <span class="status-dot"></span>
+              Application Submitted
+            </span>
+          </div>
+
+          <!-- SMS Notice -->
+          <div class="sms-notice">
+            <span class="sms-icon">📱</span>
+            <span>
+              SMS confirmation sent to <strong id="success-mobile"></strong>.
+              Please save your Admission ID for future reference.
+            </span>
+          </div>
+        </div><!-- /.success-hero -->
+
+        <!-- Dashboard Body -->
+        <div class="dashboard-body">
+
+          <!-- Dashboard Header + Actions -->
+          <div class="dashboard-header">
+            <div class="dashboard-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              Student Dashboard
+            </div>
+            <div class="dashboard-actions no-print">
+              <button class="btn btn-outline btn-sm" id="btn-print" onclick="window.print()" aria-label="Print admission form">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Print
+              </button>
+              <button class="btn btn-primary btn-sm" id="btn-pdf" aria-label="Download PDF">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download PDF
+              </button>
+            </div>
+          </div>
+
+          <!-- Personal Info Dashboard Section -->
+          <div class="dash-section">
+            <div class="dash-section-head">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Personal Information
+            </div>
+            <div class="dash-grid">
+              <div class="dash-item"><label>Full Name</label><span id="dash-name">—</span></div>
+              <div class="dash-item"><label>Father's Name</label><span id="dash-father">—</span></div>
+              <div class="dash-item"><label>Mother's Name</label><span id="dash-mother">—</span></div>
+              <div class="dash-item"><label>Date of Birth</label><span id="dash-dob">—</span></div>
+              <div class="dash-item"><label>Gender</label><span id="dash-gender">—</span></div>
+              <div class="dash-item"><label>Blood Group</label><span id="dash-blood">—</span></div>
+              <div class="dash-item"><label>Mobile Number</label><span id="dash-mobile">—</span></div>
+              <div class="dash-item"><label>Email Address</label><span id="dash-email">—</span></div>
+              <div class="dash-item"><label>Aadhaar Number</label><span id="dash-aadhaar">—</span></div>
+              <div class="dash-item"><label>Category</label><span id="dash-category">—</span></div>
+              <div class="dash-item"><label>Religion</label><span id="dash-religion">—</span></div>
+              <div class="dash-item"><label>Nationality</label><span id="dash-nationality">—</span></div>
+              <div class="dash-item" style="grid-column:1/-1"><label>Full Address</label><span id="dash-address">—</span></div>
+              <div class="dash-item"><label>City</label><span id="dash-city">—</span></div>
+              <div class="dash-item"><label>State</label><span id="dash-state">—</span></div>
+              <div class="dash-item"><label>PIN Code</label><span id="dash-pin">—</span></div>
+            </div>
+          </div>
+
+          <!-- Academic Dashboard Section -->
+          <div class="dash-section">
+            <div class="dash-section-head">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              Academic Details
+            </div>
+            <div class="dash-grid">
+              <div class="dash-item"><label>Standard Applying For</label><span id="dash-standard">—</span></div>
+              <div class="dash-item"><label>Stream</label><span id="dash-stream">—</span></div>
+              <div class="dash-item"><label>Previous School</label><span id="dash-prev-school">—</span></div>
+              <div class="dash-item"><label>Board</label><span id="dash-board">—</span></div>
+              <div class="dash-item"><label>Passing Year</label><span id="dash-year">—</span></div>
+              <div class="dash-item"><label>10th Percentage</label><span id="dash-pct">—</span></div>
+              <div class="dash-item"><label>Seat Number</label><span id="dash-seat">—</span></div>
+              <div class="dash-item"><label>Medium</label><span id="dash-medium">—</span></div>
+            </div>
+          </div>
+
+          <!-- Documents Section -->
+          <div class="dash-section">
+            <div class="dash-section-head">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Uploaded Documents
+            </div>
+            <div class="doc-grid">
+              <div class="doc-card">
+                <div class="doc-icon">📷</div>
+                <div class="doc-info">
+                  <div class="doc-name">Passport Photo</div>
+                  <div class="doc-status" id="doc-photo-status">✓ Uploaded</div>
+                </div>
+              </div>
+              <div class="doc-card">
+                <div class="doc-icon">📄</div>
+                <div class="doc-info">
+                  <div class="doc-name">SSC Marksheet</div>
+                  <div class="doc-status" id="doc-marksheet-status">✓ Uploaded</div>
+                </div>
+              </div>
+              <div class="doc-card">
+                <div class="doc-icon">🪪</div>
+                <div class="doc-info">
+                  <div class="doc-name">Aadhaar Card</div>
+                  <div class="doc-status" id="doc-aadhaar-status">✓ Uploaded</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Next Steps -->
+          <div class="next-steps">
+            <div class="next-steps-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              What Happens Next?
+            </div>
+            <ul class="step-list">
+              <li><span class="step-num">1</span><span>Visit the college office with <strong>original documents</strong> within 7 working days.</span></li>
+              <li><span class="step-num">2</span><span>Bring your <strong>Admission ID: <span id="next-steps-id"></span></strong> and 2 passport-size photographs.</span></li>
+              <li><span class="step-num">3</span><span>Pay the <strong>admission fees</strong> at the college cashier counter.</span></li>
+              <li><span class="step-num">4</span><span>Collect your <strong>college ID card</strong> and fee receipt after payment.</span></li>
+              <li><span class="step-num">5</span><span>Classes commence as per the college academic calendar. Check the notice board for your schedule.</span></li>
+            </ul>
+          </div>
+
+          <!-- College Address -->
+          <div style="font-size:0.80rem; color:var(--text-muted); text-align:center; line-height:1.8; padding:16px 0 0;">
+            <strong style="color:var(--text-secondary);">Fajandar High School &amp; Junior College</strong><br>
+            Arts, Commerce, and Science · Vahoor<br>
+            📞 Contact the college office for more information
+          </div>
+
+          <!-- New Application Button -->
+          <div style="margin-top:24px; text-align:center;" class="no-print">
+            <button class="btn btn-outline" onclick="location.reload()" style="margin: 0 auto; display:inline-flex;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><path d="M3 12a9 9 0 009 9 9.75 9.75 0 006.74-2.74L21 16"/><path d="M21 7l-3.26-3.26A9.75 9.75 0 0012 3a9 9 0 00-9 9"/></svg>
+              Start New Application
+            </button>
+          </div>
+
+        </div><!-- /.dashboard-body -->
+      </div><!-- /.success-card -->
+
+    </div><!-- /.success-page-inner -->
+    </div><!-- /#printable-area -->
+  </section><!-- /#page-success -->
+
+
+<!-- ========================================================= -->
+<!-- ADMIN LOGIN PAGE -->
+<!-- ========================================================= -->
+
+<section class="page" id="page-admin-login">
+
+  <div class="auth-card">
+
+    <h2>College Administration</h2>
+    <p>Principal / Office Staff Login</p>
+
+    <div class="field">
+      <label>Email / Username</label>
+      <input
+        type="email"
+        id="admin-email"
+        placeholder="admin@fajandar.edu.in"
+        value="admin@fajandar.edu.in"
+        autocomplete="email">
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <input
+        type="password"
+        id="admin-password"
+        placeholder="Enter Password"
+        value="admin123"
+        autocomplete="current-password">
+    </div>
+
+    <button class="btn btn-primary" id="btn-admin-submit" style="width:100%; margin-bottom:12px;">
+      Login to Admin Portal
+    </button>
+
+    <div style="text-align:center; margin-top:8px;">
+      <button class="btn btn-outline" id="btn-quick-admin-login" style="width:100%;">
+        ⚡ Quick Demo Admin Login
+      </button>
+    </div>
+
+    <div style="text-align:center; margin-top:16px;">
+      <button class="btn btn-sm" onclick="showPage('login')" style="color:var(--text-muted); background:none; border:none; cursor:pointer;">
+        ← Back to Student Login
+      </button>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================= -->
+<!-- ADMIN DASHBOARD & REPORTS PAGE -->
+<!-- ========================================================= -->
+
+<section class="page" id="page-admin-dashboard">
+
+<div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+
+        <div class="admin-logo">
+            <img src="assets/logo.jpg" alt="College Logo" onerror="this.style.display='none'">
+            <h2>Admin Panel</h2>
+        </div>
+
+        <nav class="admin-menu">
+
+            <button
+                class="admin-menu-item active"
+                onclick="setActiveMenu(this); showAdminSubView('dashboard'); loadAdminDashboard();">
+                🏠 Dashboard
+            </button>
+
+            <button
+                class="admin-menu-item"
+                onclick="setActiveMenu(this); showAdminSubView('dashboard'); loadAdminDashboard();">
+                👨‍🎓 Students
+            </button>
+
+            <button
+                class="admin-menu-item"
+                onclick="setActiveMenu(this); showAdminSubView('dashboard'); loadPendingAdmissions();">
+                ⏳ Pending
+            </button>
+
+            <button
+                class="admin-menu-item"
+                onclick="setActiveMenu(this); showAdminSubView('dashboard'); loadApprovedAdmissions();">
+                ✅ Approved
+            </button>
+
+            <button
+                class="admin-menu-item"
+                onclick="setActiveMenu(this); showAdminSubView('dashboard'); loadRejectedAdmissions();">
+                ❌ Rejected
+            </button>
+
+            <button
+                class="admin-menu-item"
+                id="menu-btn-reports"
+                onclick="setActiveMenu(this); showAdminSubView('reports'); loadReportsData();">
+                📄 Reports
+            </button>
+
+            <button
+                class="admin-menu-item"
+                onclick="setActiveMenu(this); showAdminSubView('settings');">
+                ⚙ Settings
+            </button>
+
+        </nav>
+
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+
+        <div class="admin-header">
+
+            <div>
+                <h1 id="admin-page-heading">Dashboard</h1>
+                <p>Welcome back,
+                    <span id="admin-name">
+                        Administrator
+                    </span>
+                </p>
+            </div>
+            <div class="admin-user">
+
+                <span id="admin-role">
+                    Super Admin
+                </span>
+
+                <!-- Notification Bell Container -->
+                <div class="notif-wrapper" id="notif-wrapper">
+                    <button id="admin-notif-bell" class="notif-bell-btn" onclick="toggleNotificationPanel(event)" aria-label="Notifications" title="Notifications">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                          <path d="M13.73 21a2 2 0 01-3.46 0"></path>
+                        </svg>
+                        <span id="notif-badge" class="notif-badge">0</span>
+                    </button>
+
+                    <!-- Notification Panel Dropdown -->
+                    <div id="notif-panel" class="notif-panel" style="display:none;" onclick="event.stopPropagation()">
+                        <div class="notif-panel-header">
+                            <div class="notif-header-title">
+                                <span style="font-size:1.1rem;">🔔</span>
+                                <h3 style="margin:0; font-size:0.98rem; font-weight:700;">Notifications</h3>
+                                <span id="notif-unread-count-tag" class="notif-count-tag">0 Unread</span>
+                            </div>
+                            <button class="notif-close-btn" onclick="toggleNotificationPanel(event)" aria-label="Close notifications">✕</button>
+                        </div>
+
+                        <div class="notif-toolbar">
+                            <div class="notif-tabs">
+                                <button class="notif-tab active" id="notif-tab-all" onclick="filterNotifTab('all')">All</button>
+                                <button class="notif-tab" id="notif-tab-unread" onclick="filterNotifTab('unread')">Unread</button>
+                            </div>
+                            <div class="notif-toolbar-actions">
+                                <button class="notif-text-btn" onclick="markAllNotificationsAsRead()" title="Mark all as read">✓ Read All</button>
+                                <button class="notif-text-btn danger" onclick="clearAllNotifications()" title="Clear all notifications">🗑️ Clear</button>
+                            </div>
+                        </div>
+
+                        <!-- Notifications List -->
+                        <div id="notif-list" class="notif-list">
+                            <!-- Dynamically populated in JavaScript -->
+                        </div>
+
+                        <div class="notif-panel-footer">
+                            <span>Admission Activity Log</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button
+                    id="btn-admin-logout"
+                    class="btn btn-danger">
+                    Logout
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- 1. DASHBOARD VIEW -->
+        <div id="admin-subview-dashboard" class="admin-subview">
+
+            <!-- Stats -->
+            <div class="admin-stats">
+
+                <div class="stat-card">
+                    <h3>Total Admissions</h3>
+                    <h1 id="total-admissions">0</h1>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Pending</h3>
+                    <h1 id="pending-admissions">0</h1>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Approved</h3>
+                    <h1 id="approved-admissions">0</h1>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Rejected</h3>
+                    <h1 id="rejected-admissions">0</h1>
+                </div>
+
+            </div>
+
+            <!-- Student Table -->
+            <div class="admin-table">
+
+                <div class="table-header">
+
+                    <h2>Admissions</h2>
+
+                    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <button class="btn btn-danger btn-sm" onclick="openDeleteAllModal()" title="Permanently delete all student records from database">
+                            🗑️ Delete All Student Records
+                        </button>
+                        <input
+                            id="student-search"
+                            type="text"
+                            placeholder="Search Student">
+                    </div>
+
+                </div>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Standard</th>
+                            <th>Stream</th>
+                            <th>Mobile</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="students-table-body">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- 2. REPORTS VIEW (ADDED FEATURE) -->
+        <div id="admin-subview-reports" class="admin-subview" style="display:none;">
+
+            <!-- Reports Action Bar -->
+            <div class="reports-action-bar">
+                <div class="reports-title-wrap">
+                    <h2>Admission Reports & Analytics</h2>
+                    <p class="reports-subtitle">Live analytics, statistics cards, charts, filters, search & exports</p>
+                </div>
+
+                <div class="reports-actions-group no-print">
+                    <button class="btn btn-outline btn-sm" onclick="loadReportsData(true)" title="Fetch live data from Firestore">
+                        🔄 Refresh Data
+                    </button>
+
+                    <button class="btn btn-outline btn-sm" onclick="printReport()" title="Print summary and table">
+                        🖨️ Print Report
+                    </button>
+
+                    <div class="export-dropdown-container">
+                        <button class="btn btn-primary btn-sm" onclick="toggleExportMenu()">
+                            📥 Export Report ▾
+                        </button>
+                        <div class="export-dropdown-menu" id="export-dropdown-menu">
+                            <button type="button" onclick="exportReportPDF()">📄 Export to PDF</button>
+                            <button type="button" onclick="exportReportExcel()">📊 Export to Excel (.xlsx)</button>
+                            <button type="button" onclick="exportReportCSV()">📝 Export to CSV (.csv)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Statistic Cards -->
+            <div class="admin-stats reports-stats">
+
+                <div class="stat-card rep-stat-card rep-total">
+                    <div class="rep-stat-icon">📊</div>
+                    <div>
+                        <h3>Total Admissions</h3>
+                        <h1 id="rep-total-admissions">0</h1>
+                    </div>
+                </div>
+
+                <div class="stat-card rep-stat-card rep-pending">
+                    <div class="rep-stat-icon">⏳</div>
+                    <div>
+                        <h3>Pending Admissions</h3>
+                        <h1 id="rep-pending-admissions">0</h1>
+                    </div>
+                </div>
+
+                <div class="stat-card rep-stat-card rep-approved">
+                    <div class="rep-stat-icon">✅</div>
+                    <div>
+                        <h3>Approved Admissions</h3>
+                        <h1 id="rep-approved-admissions">0</h1>
+                    </div>
+                </div>
+
+                <div class="stat-card rep-stat-card rep-rejected">
+                    <div class="rep-stat-icon">❌</div>
+                    <div>
+                        <h3>Rejected Admissions</h3>
+                        <h1 id="rep-rejected-admissions">0</h1>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Reports Filter Controls -->
+            <div class="reports-filter-box no-print">
+                <div class="reports-filter-header">
+                    <h3>🔍 Filter &amp; Search Reports</h3>
+                    <button class="btn-clear-filters" onclick="resetReportFilters()">Reset Filters</button>
+                </div>
+
+                <div class="reports-filter-grid">
+                    <div class="rep-filter-item">
+                        <label>From Date</label>
+                        <input type="date" id="rep-filter-from" onchange="applyReportFilters()">
+                    </div>
+
+                    <div class="rep-filter-item">
+                        <label>To Date</label>
+                        <input type="date" id="rep-filter-to" onchange="applyReportFilters()">
+                    </div>
+
+                    <div class="rep-filter-item">
+                        <label>Standard</label>
+                        <select id="rep-filter-standard" onchange="applyReportFilters()">
+                            <option value="ALL">All Standards</option>
+                            <option value="11th">11th Standard</option>
+                            <option value="12th">12th Standard</option>
+                        </select>
+                    </div>
+
+                    <div class="rep-filter-item">
+                        <label>Stream</label>
+                        <select id="rep-filter-stream" onchange="applyReportFilters()">
+                            <option value="ALL">All Streams</option>
+                            <option value="Arts">Arts</option>
+                            <option value="Commerce">Commerce</option>
+                            <option value="Science">Science</option>
+                        </select>
+                    </div>
+
+                    <div class="rep-filter-item">
+                        <label>Status</label>
+                        <select id="rep-filter-status" onchange="applyReportFilters()">
+                            <option value="ALL">All Statuses</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+
+                    <div class="rep-filter-item rep-search-item">
+                        <label>Search Student</label>
+                        <input type="text" id="rep-filter-search" placeholder="Search by name, ID, mobile, email..." oninput="applyReportFilters()">
+                    </div>
+
+                    <div class="rep-filter-item">
+                        <label>Sort By</label>
+                        <select id="rep-filter-sort" onchange="applyReportFilters()">
+                            <option value="date-desc">Date: Newest First</option>
+                            <option value="date-asc">Date: Oldest First</option>
+                            <option value="name-asc">Name: A to Z</option>
+                            <option value="name-desc">Name: Z to A</option>
+                            <option value="pct-desc">10th %: High to Low</option>
+                            <option value="pct-asc">10th %: Low to High</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Charts Section -->
+            <div class="reports-charts-container">
+
+                <!-- Monthly Admission Chart -->
+                <div class="chart-card-box">
+                    <div class="chart-card-title">📈 Monthly Admissions Trend</div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="chart-monthly"></canvas>
+                    </div>
+                </div>
+
+                <!-- Approval vs Rejection Chart -->
+                <div class="chart-card-box">
+                    <div class="chart-card-title">⚖️ Approval vs Rejection Chart</div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="chart-status"></canvas>
+                    </div>
+                </div>
+
+                <!-- Stream-wise Chart -->
+                <div class="chart-card-box">
+                    <div class="chart-card-title">🎨 Stream-wise Distribution</div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="chart-stream"></canvas>
+                    </div>
+                </div>
+
+                <!-- Standard-wise Chart -->
+                <div class="chart-card-box">
+                    <div class="chart-card-title">🎓 Standard-wise Breakdown</div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="chart-standard"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Detailed Reports Table -->
+            <div class="admin-table reports-table-box">
+
+                <div class="table-header">
+                    <div>
+                        <h2>Filtered Admission Records</h2>
+                        <span class="reports-record-count">Records Found: <strong id="rep-record-count">0</strong></span>
+                    </div>
+                </div>
+
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Admission ID</th>
+                                <th>Student Name</th>
+                                <th>Standard</th>
+                                <th>Stream</th>
+                                <th>10th %</th>
+                                <th>Mobile</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reports-table-body">
+                            <!-- Populated dynamically in JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- 3. SETTINGS VIEW -->
+        <div id="admin-subview-settings" class="admin-subview" style="display:none;">
+            <div class="settings-container">
+                
+                <!-- Settings Header Card -->
+                <div class="settings-header-card">
+                    <div class="settings-header-text">
+                        <h2>⚙️ Portal Settings &amp; Configuration</h2>
+                        <p>Configure college identity, admin credentials, admission rules, visual theme, and database exports.</p>
+                    </div>
+                    <div class="settings-quick-actions">
+                        <button class="btn btn-outline btn-sm" onclick="loadAdminSettings(true)">🔄 Refresh Settings</button>
+                    </div>
+                </div>
+
+                <!-- Settings Main Layout -->
+                <div class="settings-layout">
+                    
+                    <!-- Sidebar Navigation Tabs -->
+                    <div class="settings-nav-sidebar">
+                        <button class="settings-nav-btn active" onclick="switchSettingsTab('college', this)">
+                            <span class="settings-nav-icon">🏫</span>
+                            <span class="settings-nav-label">College Info</span>
+                        </button>
+                        <button class="settings-nav-btn" onclick="switchSettingsTab('profile', this)">
+                            <span class="settings-nav-icon">👤</span>
+                            <span class="settings-nav-label">Admin Profile</span>
+                        </button>
+                        <button class="settings-nav-btn" onclick="switchSettingsTab('security', this)">
+                            <span class="settings-nav-icon">🔒</span>
+                            <span class="settings-nav-label">Security</span>
+                        </button>
+                        <button class="settings-nav-btn" onclick="switchSettingsTab('admission', this)">
+                            <span class="settings-nav-icon">⚙️</span>
+                            <span class="settings-nav-label">Admission Rules</span>
+                        </button>
+                        <button class="settings-nav-btn" onclick="switchSettingsTab('theme', this)">
+                            <span class="settings-nav-icon">🎨</span>
+                            <span class="settings-nav-label">Theme &amp; Font</span>
+                        </button>
+                        <button class="settings-nav-btn" onclick="switchSettingsTab('backup', this)">
+                            <span class="settings-nav-icon">💾</span>
+                            <span class="settings-nav-label">Backup &amp; Export</span>
+                        </button>
+                        <button class="settings-nav-btn" onclick="switchSettingsTab('about', this)">
+                            <span class="settings-nav-icon">ℹ️</span>
+                            <span class="settings-nav-label">About Portal</span>
+                        </button>
+                    </div>
+
+                    <!-- Settings Panels Container -->
+                    <div class="settings-content-area">
+
+                        <!-- SECTION 1: College Information -->
+                        <div id="settings-panel-college" class="settings-panel active">
+                            <div class="settings-card">
+                                <div class="settings-card-header">
+                                    <h3>🏫 Section 1: College Information</h3>
+                                    <span class="settings-badge">General Metadata</span>
+                                </div>
+                                <div class="settings-card-body">
+                                    <form id="form-college-info" onsubmit="saveCollegeInfo(event)">
+                                        <div class="settings-form-grid">
+                                            <div class="form-group span-2">
+                                                <label>College Full Name <span class="req">*</span></label>
+                                                <input type="text" id="set-college-name" required placeholder="e.g. Fajandar High School & Junior College">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>College Short Name</label>
+                                                <input type="text" id="set-college-short" placeholder="e.g. Fajandar Jr. College">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Principal Name <span class="req">*</span></label>
+                                                <input type="text" id="set-college-principal" required placeholder="e.g. Dr. A. R. Shaikh">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Academic Session <span class="req">*</span></label>
+                                                <input type="text" id="set-college-session" required placeholder="e.g. 2025 - 2026">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Official Email <span class="req">*</span></label>
+                                                <input type="email" id="set-college-email" required placeholder="e.g. info@fajandar.edu.in">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Contact Phone <span class="req">*</span></label>
+                                                <input type="text" id="set-college-phone" required placeholder="e.g. +91 9822001122">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>College Website URL</label>
+                                                <input type="url" id="set-college-website" placeholder="e.g. https://fajandar.edu.in">
+                                            </div>
+                                            <div class="form-group span-3">
+                                                <label>Full College Address <span class="req">*</span></label>
+                                                <textarea id="set-college-address" rows="3" required placeholder="Enter postal address..."></textarea>
+                                            </div>
+                                            <div class="form-group span-3">
+                                                <label>College Logo Upload</label>
+                                                <div class="settings-upload-wrapper">
+                                                    <div class="settings-logo-preview-box">
+                                                        <img id="set-logo-preview" src="https://ui-avatars.com/api/?name=FJC&background=3b82f6&color=ffffff&size=128" alt="College Logo Preview">
+                                                    </div>
+                                                    <div class="settings-upload-controls">
+                                                        <input type="file" id="set-logo-file" accept="image/*" onchange="handleLogoSelect(event)">
+                                                        <small class="help-text">Recommended size: Square PNG or JPG under 1MB.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="settings-card-footer">
+                                            <button type="submit" class="btn btn-primary">💾 Save College Info</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 2: Admin Profile -->
+                        <div id="settings-panel-profile" class="settings-panel">
+                            <div class="settings-card">
+                                <div class="settings-card-header">
+                                    <h3>👤 Section 2: Admin Profile</h3>
+                                    <span class="settings-badge">Account Details</span>
+                                </div>
+                                <div class="settings-card-body">
+                                    <div class="settings-info-badges-grid">
+                                        <div class="info-badge-card">
+                                            <span class="info-badge-title">Email Address</span>
+                                            <span class="info-badge-val" id="set-disp-email">admin@fajandar.edu.in</span>
+                                        </div>
+                                        <div class="info-badge-card">
+                                            <span class="info-badge-title">Assigned Role</span>
+                                            <span class="info-badge-val role-badge" id="set-disp-role">Super Administrator</span>
+                                        </div>
+                                        <div class="info-badge-card">
+                                            <span class="info-badge-title">Last Login Session</span>
+                                            <span class="info-badge-val" id="set-disp-lastlogin">Today, 09:12 AM</span>
+                                        </div>
+                                    </div>
+
+                                    <form id="form-admin-profile" onsubmit="saveAdminProfile(event)" style="margin-top:24px;">
+                                        <div class="settings-form-grid">
+                                            <div class="form-group span-2">
+                                                <label>Administrator Display Name <span class="req">*</span></label>
+                                                <input type="text" id="set-admin-fullname" required placeholder="Enter full name...">
+                                            </div>
+                                            <div class="form-group span-3">
+                                                <label>Profile Avatar / Photo</label>
+                                                <div class="settings-upload-wrapper">
+                                                    <div class="settings-avatar-preview-box">
+                                                        <img id="set-avatar-preview" src="https://ui-avatars.com/api/?name=Admin&background=3b82f6&color=ffffff&size=128" alt="Admin Avatar">
+                                                    </div>
+                                                    <div class="settings-upload-controls">
+                                                        <input type="file" id="set-avatar-file" accept="image/*" onchange="handleAvatarSelect(event)">
+                                                        <small class="help-text">Upload a professional headshot or photo.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="settings-card-footer">
+                                            <button type="submit" class="btn btn-primary">💾 Update Admin Profile</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 3: Security -->
+                        <div id="settings-panel-security" class="settings-panel">
+                            <div class="settings-card">
+                                <div class="settings-card-header">
+                                    <h3>🔒 Section 3: Security &amp; Credentials</h3>
+                                    <span class="settings-badge security">Protected</span>
+                                </div>
+                                <div class="settings-card-body">
+                                    <h4 class="settings-section-subtitle">🔑 Change Admin Password</h4>
+                                    <form id="form-admin-password" onsubmit="updateAdminPassword(event)">
+                                        <div class="settings-form-grid">
+                                            <div class="form-group span-3">
+                                                <label>Current Password <span class="req">*</span></label>
+                                                <input type="password" id="set-curr-pass" required placeholder="Enter current password...">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>New Password <span class="req">*</span></label>
+                                                <input type="password" id="set-new-pass" required minlength="6" placeholder="At least 6 characters...">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Confirm New Password <span class="req">*</span></label>
+                                                <input type="password" id="set-confirm-pass" required minlength="6" placeholder="Re-enter new password...">
+                                            </div>
+                                        </div>
+                                        <div class="settings-card-footer" style="justify-content:flex-start; gap:12px;">
+                                            <button type="submit" class="btn btn-primary">🔑 Change Password</button>
+                                        </div>
+                                    </form>
+
+                                    <hr class="settings-divider">
+
+                                    <h4 class="settings-section-subtitle">🚪 Active Sessions &amp; Logout</h4>
+                                    <div class="session-actions-box">
+                                        <div class="session-desc">
+                                            <p>Terminate active administrative sessions securely across current or all connected devices.</p>
+                                        </div>
+                                        <div class="session-btns">
+                                            <button class="btn btn-outline" type="button" onclick="logoutCurrentDevice()">🚪 Logout From Current Device</button>
+                                            <button class="btn btn-danger" type="button" onclick="logoutAllDevices()">⚠️ Logout From All Devices</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 4: Admission Settings -->
+                        <div id="settings-panel-admission" class="settings-panel">
+                            <div class="settings-card">
+                                <div class="settings-card-header">
+                                    <h3>⚙️ Section 4: Admission Settings</h3>
+                                    <span class="settings-badge">Rule Engine</span>
+                                </div>
+                                <div class="settings-card-body">
+                                    <form id="form-admission-settings" onsubmit="saveAdmissionSettings(event)">
+                                        <div class="settings-form-grid">
+                                            <div class="form-group">
+                                                <label>Admission Status</label>
+                                                <select id="set-adm-status">
+                                                    <option value="OPEN">🟢 OPEN (Accepting Applications)</option>
+                                                    <option value="CLOSED">🔴 CLOSED (Admissions Closed)</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Online Registration</label>
+                                                <select id="set-online-reg">
+                                                    <option value="ENABLED">✅ Enabled (Form Accessible)</option>
+                                                    <option value="DISABLED">⛔ Disabled (Form Blocked)</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Maximum Admissions Limit <span class="req">*</span></label>
+                                                <input type="number" id="set-max-admissions" min="1" max="10000" required placeholder="e.g. 500">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Admission Start Date</label>
+                                                <input type="date" id="set-start-date">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Admission End Date</label>
+                                                <input type="date" id="set-end-date">
+                                            </div>
+                                        </div>
+                                        <div class="settings-card-footer">
+                                            <button type="submit" class="btn btn-primary">💾 Save Admission Rules</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 5: Theme & Appearance -->
+                        <div id="settings-panel-theme" class="settings-panel">
+                            <div class="settings-card">
+                                <div class="settings-card-header">
+                                    <h3>🎨 Section 5: Theme &amp; Font Preferences</h3>
+                                    <span class="settings-badge">Appearance</span>
+                                </div>
+                                <div class="settings-card-body">
+                                    <form id="form-theme-settings" onsubmit="saveThemePreferences(event)">
+                                        <div class="settings-form-grid">
+                                            <div class="form-group">
+                                                <label>Color Theme Mode</label>
+                                                <select id="set-theme-mode" onchange="previewThemeChange()">
+                                                    <option value="dark">🌙 Dark Neon Mode (Default)</option>
+                                                    <option value="light">☀️ Light Professional Mode</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Font Size</label>
+                                                <select id="set-font-size" onchange="previewFontSizeChange()">
+                                                    <option value="small">S — Small (Compact)</option>
+                                                    <option value="medium" selected>M — Medium (Standard)</option>
+                                                    <option value="large">L — Large (Accessible)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="settings-card-footer">
+                                            <button type="submit" class="btn btn-primary">💾 Save Theme Preferences</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 6: Backup & Export -->
+                        <div id="settings-panel-backup" class="settings-panel">
+                            <div class="settings-card">
+                                <div class="settings-card-header">
+                                    <h3>💾 Section 6: Database Backup &amp; Data Export</h3>
+                                    <span class="settings-badge">Data Ops</span>
+                                </div>
+                                <div class="settings-card-body">
+                                    <p class="settings-intro-p">Export admission records and complete portal system backups for offline archiving, audit, and compliance.</p>
+                                    
+                                    <div class="export-buttons-grid">
+                                        <div class="export-card">
+                                            <div class="export-icon">📊</div>
+                                            <h4>Admissions CSV Export</h4>
+                                            <p>Download structured tabular data of all registered students compatible with Excel / Google Sheets.</p>
+                                            <button class="btn btn-outline" type="button" onclick="exportAdmissionsCSV()">📥 Export Admissions CSV</button>
+                                        </div>
+
+                                        <div class="export-card">
+                                            <div class="export-icon">📄</div>
+                                            <h4>Admissions PDF Report</h4>
+                                            <p>Generate a printable high-resolution PDF document summarizing all student admission records.</p>
+                                            <button class="btn btn-outline" type="button" onclick="exportAdmissionsPDF()">📥 Export Admissions PDF</button>
+                                        </div>
+
+                                        <div class="export-card">
+                                            <div class="export-icon">📦</div>
+                                            <h4>Complete Database JSON Backup</h4>
+                                            <p>Export raw JSON snapshot of all Firestore collections including settings and admissions.</p>
+                                            <button class="btn btn-primary" type="button" onclick="exportDatabaseJSON()">📥 Export Database JSON</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 7: About -->
+                        <div id="settings-panel-about" class="settings-panel">
+                            <div class="settings-card">
+                                <div class="settings-card-header">
+                                    <h3>ℹ️ Section 7: About Admission Portal</h3>
+                                    <span class="settings-badge">System Info</span>
+                                </div>
+                                <div class="settings-card-body">
+                                    <div class="about-hero-box">
+                                        <div class="about-logo-badge">🏫</div>
+                                        <div class="about-details">
+                                            <h3>Fajandar High School &amp; Junior College</h3>
+                                            <p class="about-tagline">Arts, Commerce &amp; Science — Vahoor, Mahad, Raigad</p>
+                                            <span class="version-tag">Portal Version: <strong>v2.5.0 Enterprise</strong></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="about-grid">
+                                        <div class="about-info-item">
+                                            <span class="about-label">Lead Developer</span>
+                                            <span class="about-val">Mukadam Zakariya Zubair Ahmed</span>
+                                        </div>
+                                        <div class="about-info-item">
+                                            <span class="about-label">Backend Platform</span>
+                                            <span class="about-val">Firebase Firestore &amp; Auth Engine</span>
+                                        </div>
+                                        <div class="about-info-item">
+                                            <span class="about-label">System Architecture</span>
+                                            <span class="about-val">Serverless Cloud Web App</span>
+                                        </div>
+                                        <div class="about-info-item">
+                                            <span class="about-label">Copyright Notice</span>
+                                            <span class="about-val">&copy; 2026 Fajandar High School &amp; Jr. College. All Rights Reserved.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><!-- /.settings-content-area -->
+
+                </div><!-- /.settings-layout -->
+
+            </div><!-- /.settings-container -->
+        </div>
+
+    </main>
+
+</div>
+
+</section>
+
+
+</div><!-- /#app -->
+
+<!-- ══════════════════════════════════════
+     SITE FOOTER
+══════════════════════════════════════ -->
+<footer class="site-footer" id="site-footer">
+  <div class="footer-college">
+    Fajandar High School &amp; Junior College — Arts, Commerce, and Science, Vahoor
+  </div>
+  <div class="footer-copy">
+    &copy; <span id="footer-year"></span> All Rights Reserved &nbsp;|&nbsp;
+    Designed &amp; Developed by <strong>Mukadam Zakariya Zubair Ahmed</strong>
+  </div>
+</footer>
+
+<!-- ╔════════════════════════════════════════╗
+     ║     STUDENT PROFILE VIEW MODAL         ║
+     ╚════════════════════════════════════════╝ -->
+<div class="modal-backdrop" id="student-profile-modal" style="display:none;" onclick="handleModalBackdropClick(event)">
+  <div class="student-profile-card">
+    
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="profile-header-badge">
+        <div class="profile-avatar-wrapper">
+          <img id="sp-avatar" src="" alt="Student Photo" onerror="this.src='https://ui-avatars.com/api/?name=SP&background=3b82f6&color=ffffff&size=128';">
+          <span class="sp-status-badge pending" id="sp-status">Pending</span>
+        </div>
+        <div class="profile-header-info">
+          <h2 id="sp-full-name">Student Full Name</h2>
+          <div class="sp-sub-details">
+            <span class="sp-id-tag">ID: <strong id="sp-admission-id">FJD-2025-XXXXXX</strong></span>
+            <button class="btn-copy-id" onclick="copyAdmissionId()" title="Copy Admission ID">📋 Copy ID</button>
+            <span class="sp-course-tag" id="sp-course-tag">11th Standard — Science</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-header-actions no-print">
+        <button class="btn btn-outline btn-sm" onclick="printStudentProfile()" title="Print Profile">🖨️ Print</button>
+        <button class="btn btn-primary btn-sm" onclick="downloadStudentProfilePDF()" title="Download PDF">📄 Download PDF</button>
+        <button class="modal-close-btn" onclick="closeStudentProfileModal()" aria-label="Close modal">✕</button>
+      </div>
+    </div>
+
+    <!-- Modal Body (Printable Content Area) -->
+    <div class="modal-body printable-profile" id="printable-student-profile">
+
+      <!-- Section 1: Personal Details -->
+      <div class="profile-section">
+        <h3 class="profile-section-title">👤 Personal Information</h3>
+        <div class="profile-grid">
+          <div class="profile-item">
+            <span class="profile-label">Full Name</span>
+            <span class="profile-value" id="sp-val-fullname">Not Available</span>
+          </div>
+          <div class="profile-item">
+            <span class="profile-label">Father's Name</span>
+            <span class="profile-value" id="sp-val-fathername">Not Available</span>
+          </div>
+          <div class="profile-item">
+            <span class="profile-label">Mother's Name</span>
+            <span class="profile-value" id="sp-val-mothername">Not Available</span>
+          </div>
+          <div class="profile-item">
+            <span class="profile-label">Date of Birth</span>
+            <span class="profile-value" id="sp-val-dob">Not Available</span>
+          </div>
+          <div class="profile-item">
+            <span class="profile-label">Gender</span>
+            <span class="profile-value" id="sp-val-gender">Not Available</span>
+          </div>
+          <div class="profile-item">
+            <span class="profile-label">Aadhaar Number</span>
+            <span class="profile-value" id="sp-val-aadhaar">Not Available</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Academic Details -->
+      <div class="profile-section">
+        <h3 class="profile-section-title">🎓 Academic Information</h3>
+        <div class="profile-grid">
+          <div class="profile-item">
+            <span class="profile-label">Standard</span>
+            <span class="profile-value" id="sp-val-standard">Not Available</span>
+          </div>
+          <div class="profile-item">
+            <span class="profile-label">Stream</span>
+            <span class="profile-value" id="sp-val-stream">Not Available</span>
+          </div>
+          <div class="profile-item">
+            <span class="profile-label">Previous School</span>
+            <span class="profile-value" id="sp-val-school">Not Available</span>
+          </div>
+          <div class="profile-item">
+            <span class="profile-label">Percentage / Marks</span>
+            <span class="profile-value" id="sp-val-marks">Not Available</span>
+          </div>
+          <div class="profile-item">
+            <span class="profile-label">Admission Date</span>
+            <span class="profile-value" id="sp-val-date">Not Available</span>
+          </div>
+          <div class="profile-item">
+            <span class="profile-label">Admission Status</span>
+            <span class="profile-value" id="sp-val-status">Not Available</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Contact & Parent Details -->
+      <div class="profile-section">
+        <h3 class="profile-section-title">📞 Contact &amp; Parent Details</h3>
+        <div class="profile-grid">
+          <div class="profile-item">
+            <span class="profile-label">Student Mobile</span>
+            <span class="profile-value" id="sp-val-mobile">Not Available</span>
+          </div>
+          <div class="profile-item">
+            <span class="profile-label">Parent Mobile</span>
+            <span class="profile-value" id="sp-val-parentmobile">Not Available</span>
+          </div>
+          <div class="profile-item">
+            <span class="profile-label">Email Address</span>
+            <span class="profile-value" id="sp-val-email">Not Available</span>
+          </div>
+          <div class="profile-item full-width">
+            <span class="profile-label">Permanent Address</span>
+            <span class="profile-value" id="sp-val-address">Not Available</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer no-print">
+      <button class="btn btn-danger btn-sm" onclick="deleteFromProfileModal()" title="Delete Student Record">🗑️ Delete Student</button>
+      <button class="btn btn-outline" onclick="closeStudentProfileModal()">Close</button>
+      <button class="btn btn-outline" onclick="printStudentProfile()">🖨️ Print Profile</button>
+      <button class="btn btn-primary" onclick="downloadStudentProfilePDF()">📄 Download PDF</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ╔═════════════════════════════════════════════════════╗
+     ║  LOGOUT FROM ALL DEVICES CONFIRMATION MODAL         ║
+     ╚═════════════════════════════════════════════════════╝ -->
+<div class="modal-backdrop" id="logout-all-modal" style="display:none;" onclick="handleLogoutModalBackdropClick(event)">
+  <div class="modal-card-compact">
+    <div class="modal-header">
+      <div class="modal-header-title">
+        <span class="modal-title-icon" style="font-size:1.4rem;">⚠️</span>
+        <h2 style="margin:0; font-size:1.15rem; font-weight:700;">Logout From All Devices</h2>
+      </div>
+      <button class="modal-close-btn" onclick="closeLogoutAllModal()" aria-label="Close modal">✕</button>
+    </div>
+
+    <form id="form-confirm-logout-all" onsubmit="handleConfirmLogoutAll(event)">
+      <div class="modal-body" style="padding:20px;">
+        <p class="modal-warning-text">
+          You are about to sign out this administrator account from all logged-in devices.
+          This action cannot be undone.
+        </p>
+
+        <div class="form-group" style="margin-top:20px;">
+          <label for="logout-admin-pass" style="display:block; margin-bottom:8px; font-weight:600; font-size:0.9rem;">
+            Enter Admin Password to Confirm <span class="req" style="color:#ef4444;">*</span>
+          </label>
+          <input type="password" id="logout-admin-pass" required placeholder="Enter admin password..." autocomplete="current-password" style="width:100%;">
+          <small id="logout-modal-error" class="modal-error-message" style="display:none; color:#f87171; margin-top:8px; font-weight:600; font-size:0.85rem;"></small>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="display:flex; justify:flex-end; gap:12px; padding:16px 20px; border-top:1px solid rgba(255,255,255,0.1);">
+        <button type="button" class="btn btn-outline" onclick="closeLogoutAllModal()">Cancel</button>
+        <button type="submit" class="btn btn-danger" id="btn-confirm-logout-all">Confirm Logout</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ╔═════════════════════════════════════════════════════╗
+     ║  DELETE SINGLE STUDENT CONFIRMATION MODAL           ║
+     ╚═════════════════════════════════════════════════════╝ -->
+<div class="modal-backdrop" id="delete-single-modal" style="display:none;" onclick="handleDeleteSingleModalBackdropClick(event)">
+  <div class="modal-card-compact" style="max-width:480px;">
+    <div class="modal-header" style="background:#dc2626; color:#ffffff;">
+      <div class="modal-header-title">
+        <span class="modal-title-icon" style="font-size:1.3rem;">🗑️</span>
+        <h2 style="margin:0; font-size:1.15rem; font-weight:700; color:#ffffff;">Delete Student Record</h2>
+      </div>
+      <button class="modal-close-btn" onclick="closeDeleteSingleModal()" aria-label="Close modal">✕</button>
+    </div>
+
+    <div class="modal-body" style="padding:20px;">
+      <p class="modal-warning-text" style="background:rgba(239, 68, 68, 0.12); border-left:4px solid #ef4444; padding:12px 16px; border-radius:8px; margin:0 0 16px 0; color:#f8fafc; font-size:0.9rem;">
+        ⚠️ <strong>Warning:</strong> You are about to permanently delete this student record from Firebase Firestore. This action cannot be undone.
+      </p>
+
+      <div style="background:rgba(255,255,255,0.05); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+        <div style="margin-bottom:8px; font-size:0.85rem; color:#94a3b8;">
+          Admission ID: <strong id="delete-student-id" style="color:#60a5fa; font-family:monospace; font-size:0.95rem;">-</strong>
+        </div>
+        <div style="font-size:0.95rem; color:#f8fafc;">
+          Student Name: <strong id="delete-student-name" style="color:#ffffff;">-</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer" style="display:flex; justify:flex-end; gap:12px; padding:16px 20px; border-top:1px solid rgba(255,255,255,0.1);">
+      <button type="button" class="btn btn-outline" onclick="closeDeleteSingleModal()">Cancel</button>
+      <button type="button" class="btn btn-danger" id="btn-confirm-delete-single" onclick="executeDeleteSingleStudent()">
+        🗑️ Permanently Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ╔═════════════════════════════════════════════════════╗
+     ║  DELETE ALL STUDENT RECORDS CONFIRMATION MODAL       ║
+     ╚═════════════════════════════════════════════════════╝ -->
+<div class="modal-backdrop" id="delete-all-modal" style="display:none;" onclick="handleDeleteAllModalBackdropClick(event)">
+  <div class="modal-card-compact" style="max-width:520px;">
+    <div class="modal-header" style="background:#dc2626; color:#ffffff;">
+      <div class="modal-header-title">
+        <span class="modal-title-icon" style="font-size:1.4rem;">⚠️</span>
+        <h2 style="margin:0; font-size:1.15rem; font-weight:800; color:#ffffff;">DANGER: Delete All Student Records</h2>
+      </div>
+      <button class="modal-close-btn" onclick="closeDeleteAllModal()" aria-label="Close modal">✕</button>
+    </div>
+
+    <div class="modal-body" style="padding:22px;">
+      <div class="modal-warning-text" style="background:rgba(239, 68, 68, 0.18); border-left:4px solid #dc2626; padding:14px 16px; border-radius:8px; margin-bottom:16px; color:#f8fafc; font-size:0.9rem; line-height:1.5;">
+        🚨 <strong>CRITICAL WARNING:</strong> This action will PERMANENTLY ERASE every student admission record from the database!
+      </div>
+
+      <p style="font-size:0.9rem; color:#cbd5e1; line-height:1.5; margin-bottom:18px;">
+        You are about to delete <strong id="delete-all-count" style="color:#f87171; font-size:1.1rem; font-weight:800;">0</strong> student document(s). Once deleted, this data cannot be recovered.
+      </p>
+
+      <div class="form-group">
+        <label for="delete-all-input-confirm" style="display:block; margin-bottom:8px; font-weight:700; font-size:0.85rem; color:#f8fafc;">
+          To confirm, type <span style="color:#ef4444; font-family:monospace; font-weight:800; background:rgba(239,68,68,0.2); padding:2px 6px; border-radius:4px;">DELETE</span> below:
+        </label>
+        <input type="text" id="delete-all-input-confirm" placeholder="Type DELETE to enable button" oninput="handleDeleteAllInputChange()" style="width:100%; border-color:#ef4444; font-weight:700;" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="modal-footer" style="display:flex; justify:flex-end; gap:12px; padding:16px 22px; border-top:1px solid rgba(255,255,255,0.1);">
+      <button type="button" class="btn btn-outline" onclick="closeDeleteAllModal()">Cancel</button>
+      <button type="button" class="btn btn-danger" id="btn-confirm-delete-all" disabled onclick="executeDeleteAllStudents()">
+        🗑️ Permanently Delete All Records
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- EmailJS SDK & Configuration -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script type="text/javascript">
+  window.emailjsConfig = window.emailjsConfig || {
+    publicKey: "YOUR_PUBLIC_KEY",
+    serviceId: "service_fajandar",
+    templateSubmitted: "template_admission_submitted",
+    templateApproved: "template_admission_approved",
+    templateRejected: "template_admission_rejected"
+  };
+  if (window.emailjs && window.emailjsConfig.publicKey && window.emailjsConfig.publicKey !== "YOUR_PUBLIC_KEY") {
+    try {
+      emailjs.init(window.emailjsConfig.publicKey);
+    } catch (e) {
+      console.warn("EmailJS init:", e);
+    }
+  }
+</script>
+<script src="firebase-config.js"></script>
+<script src="app.js"></script>
+<script>
+  document.getElementById('footer-year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "Online Admission Portal",
+  "description": "Fajandar High School & Junior College Online Admission Portal with Admin Reports, Dashboard, Student Application, and Data Export",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

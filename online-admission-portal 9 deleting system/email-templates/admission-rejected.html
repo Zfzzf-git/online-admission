@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admission Application Status Update - Fajandar High School & Jr. College</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; font-size: 15px; line-height: 1.6; color: #334155;">
+
+  <!-- Main Wrapper -->
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f1f5f9; padding: 30px 10px;">
+    <tr>
+      <td align="center">
+        <!-- Container Card -->
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border: 1px solid #e2e8f0;">
+          
+          <!-- Header Banner -->
+          <tr>
+            <td align="center" style="background-color: #1e3a8a; padding: 30px 20px; text-align: center;">
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding-bottom: 12px;">
+                    <div style="background-color: #ffffff; width: 64px; height: 64px; border-radius: 50%; display: inline-block; line-height: 64px; font-size: 32px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">🏫</div>
+                  </td>
+                </tr>
+              </table>
+              <h1 style="color: #ffffff; margin: 0 0 4px 0; font-size: 20px; font-weight: 700; letter-spacing: 0.5px;">FAJANDAR HIGH SCHOOL & JR. COLLEGE</h1>
+              <p style="color: #93c5fd; margin: 0; font-size: 13px; font-weight: 500;">Arts, Commerce & Science — Vahoor, Mahad, Raigad</p>
+            </td>
+          </tr>
+
+          <!-- Status Bar -->
+          <tr>
+            <td style="background-color: #fef2f2; padding: 12px 24px; border-bottom: 1px solid #fee2e2; text-align: center;">
+              <span style="background-color: #dc2626; color: #ffffff; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;">Application Status Update</span>
+            </td>
+          </tr>
+
+          <!-- Email Body Content -->
+          <tr>
+            <td style="padding: 30px 24px;">
+              <h2 style="color: #1e293b; margin-top: 0; margin-bottom: 16px; font-size: 18px; font-weight: 700;">Dear {{student_name}},</h2>
+              
+              <p style="margin-top: 0; margin-bottom: 16px; color: #334155;">
+                Thank you for your interest in pursuing your education at <strong>Fajandar High School & Junior College</strong>.
+              </p>
+
+              <p style="margin-bottom: 20px; color: #334155;">
+                After careful evaluation of your application by our admission committee, we regret to inform you that we are unable to approve your application for the requested stream at this time.
+              </p>
+
+              <!-- Details Table -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 24px; font-size: 14px;">
+                <tr>
+                  <td style="padding: 10px 16px; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #64748b; width: 40%;">Admission ID:</td>
+                  <td style="padding: 10px 16px; border-bottom: 1px solid #e2e8f0; font-weight: 700; color: #1e293b;">{{admission_id}}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 16px; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #64748b;">Applicant Name:</td>
+                  <td style="padding: 10px 16px; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #1e293b;">{{student_name}}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 16px; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #64748b;">Standard & Stream:</td>
+                  <td style="padding: 10px 16px; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #1e293b;">{{standard}} ({{stream}})</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 16px; font-weight: 600; color: #64748b;">Status:</td>
+                  <td style="padding: 10px 16px; font-weight: 700; color: #dc2626;">REJECTED / UNABLE TO PROCESS</td>
+                </tr>
+              </table>
+
+              <!-- Reason Box (Dynamic or Fallback) -->
+              <div style="background-color: #fef2f2; border-left: 4px solid #dc2626; border-radius: 6px; padding: 16px; margin-bottom: 24px;">
+                <h3 style="margin: 0 0 8px 0; color: #991b1b; font-size: 14px; font-weight: 700;">Reason for Application Rejection:</h3>
+                <p style="margin: 0; font-size: 13.5px; color: #7f1d1d; font-weight: 500; line-height: 1.5;">
+                  {{rejection_reason}}
+                </p>
+              </div>
+
+              <p style="margin-bottom: 20px; color: #334155; font-size: 14px;">
+                If you believe this decision was made due to incomplete documentation or an error in percentage input, you may visit or contact our admission Helpdesk office for clarification or stream change options.
+              </p>
+
+              <!-- Helpdesk Box -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 14px 16px; margin-bottom: 24px;">
+                <tr>
+                  <td style="color: #475569; font-size: 13px; line-height: 1.5;">
+                    📞 <strong>Admission Helpdesk Support:</strong><br>
+                    Office Hours: Monday to Saturday (10:00 AM - 4:00 PM)<br>
+                    Contact: +91 9822001122 / info@fajandar.edu.in
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Button -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" style="padding-top: 10px; padding-bottom: 10px;">
+                    <a href="https://fajandar.edu.in" target="_blank" style="background-color: #1e3a8a; color: #ffffff; padding: 12px 28px; border-radius: 6px; font-weight: 700; font-size: 14px; text-decoration: none; display: inline-block; box-shadow: 0 2px 6px rgba(30, 58, 138, 0.3);">Visit Admission Portal</a>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #0f172a; color: #94a3b8; padding: 24px; text-align: center; font-size: 12px; line-height: 1.6; border-top: 1px solid #1e293b;">
+              <p style="margin: 0 0 6px 0; color: #cbd5e1; font-weight: 600;">Fajandar High School & Junior College Admission Office</p>
+              <p style="margin: 0 0 10px 0;">At Post Vahoor, Near National Highway, Taluka Mahad, District Raigad, Maharashtra - 402301</p>
+              <p style="margin: 0;">Phone: +91 9822001122 | Email: info@fajandar.edu.in</p>
+              <p style="margin-top: 14px; margin-bottom: 0; color: #64748b; font-size: 11px;">&copy; 2026 Fajandar High School & Jr. College. All Rights Reserved.</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
